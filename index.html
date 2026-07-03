@@ -1697,6 +1697,7 @@ applyHv3AdminData();</script>
       <button class="admin-tab" id="tab-notif" onclick="switchTab('notif')"><span class="tab-icon">📢</span>إشعارات</button>
       <button class="admin-tab" id="tab-struktur" onclick="switchTab('struktur')"><span class="tab-icon">📄</span>Struktur</button>
       <button class="admin-tab" id="tab-afkar" onclick="switchTab('afkar')"><span class="tab-icon">💡</span>أفكار T3</button>
+      <button class="admin-tab" id="tab-usage" onclick="switchTab('usage')"><span class="tab-icon">📊</span>استهلاك AI</button>
     </div>
     <div id="tab-panel-codes">
       <div class="admin-form-card">
@@ -2527,6 +2528,28 @@ applyHv3AdminData();</script>
       </div>
     </div>
     <!-- ===== END AFKAR MDT3 ADMIN PANEL ===== -->
+
+    <!-- ===== USAGE / تحليل استهلاك ممتحنة AI ===== -->
+    <div id="tab-panel-usage" style="display:none;">
+      <div class="admin-form-card">
+        <h3 style="margin-bottom:.5rem;">📊 تحليل استهلاك ممتحنة AI (Anthropic + Groq Whisper + ElevenLabs)</h3>
+        <p style="font-size:.78rem;color:var(--muted);margin-bottom:1rem;line-height:1.5;">يعرض من أين وكيف يُستهلك الرصيد: عدد الحروف الفعلية المرسلة لـ ElevenLabs، توكنز Anthropic، وأي رد "قُطع" لأنه طويل جداً — مقسّم حسب الكود.</p>
+        <div style="display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin-bottom:1rem;">
+          <label style="font-size:.78rem;color:var(--muted);">عدد الأيام للخلف:</label>
+          <select id="usage-days-select" class="admin-input" style="width:90px;">
+            <option value="1">يوم واحد</option>
+            <option value="3">3 أيام</option>
+            <option value="7" selected>7 أيام</option>
+            <option value="14">14 يوم</option>
+          </select>
+          <button class="btn-primary" style="font-size:.8rem;padding:.5rem 1rem;" onclick="loadAiUsageReport()">🔄 تحديث</button>
+        </div>
+        <div id="usage-report-body">
+          <p style="font-size:.82rem;color:var(--muted);">جارٍ التحميل...</p>
+        </div>
+      </div>
+    </div>
+    <!-- ===== END USAGE ADMIN PANEL ===== -->
 </div>
 <div id="page-mundlich" class="page">
   <div class="cat-header">
@@ -5159,6 +5182,8 @@ function switchTab(tab) {
   if (strukturPanel) strukturPanel.style.display = tab === 'struktur' ? 'block' : 'none';
   var afkarPanel = document.getElementById('tab-panel-afkar');
   if (afkarPanel) afkarPanel.style.display = tab === 'afkar' ? 'block' : 'none';
+  var usagePanel = document.getElementById('tab-panel-usage');
+  if (usagePanel) usagePanel.style.display = tab === 'usage' ? 'block' : 'none';
   document.getElementById('tab-codes').classList.toggle('active', tab === 'codes');
   document.getElementById('tab-names').classList.toggle('active', tab === 'names');
   var hvTab = document.getElementById('tab-hv');
@@ -5173,11 +5198,14 @@ function switchTab(tab) {
   if (notifTab) notifTab.classList.toggle('active', tab === 'notif');
   var strukturTab = document.getElementById('tab-struktur');
   if (strukturTab) strukturTab.classList.toggle('active', tab === 'struktur');
+  var usageTab = document.getElementById('tab-usage');
+  if (usageTab) usageTab.classList.toggle('active', tab === 'usage');
   var afkarTab = document.getElementById('tab-afkar');
   if (afkarTab) afkarTab.classList.toggle('active', tab === 'afkar');
   if (tab === 'notif') notifAdminLoad();
   if (tab === 'struktur') strukturAdminLoad();
   if (tab === 'afkar') afkarAdminLoad();
+  if (tab === 'usage') loadAiUsageReport();
   if (tab === 'exams') renderExamList();
   if (tab === 'names') {
     Promise.all([
@@ -5226,6 +5254,119 @@ function switchTab(tab) {
   }
   if (tab === 'sb') switchSbAdminTab('sb1');
   if (tab === 'md') mdAdminInit();
+}
+
+// =====================================================================
+// ✅ تقرير تحليل استهلاك ممتحنة AI — يكشف أين/كيف/متى/من أين يُستهلك الرصيد
+// =====================================================================
+function escUsageHtml(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, function(c) {
+    return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c];
+  });
+}
+
+function loadAiUsageReport() {
+  var adminPass = _adminPassStore ? _adminPassStore.get() : null;
+  var body = document.getElementById('usage-report-body');
+  if (!adminPass || !body) return;
+  var daysSel = document.getElementById('usage-days-select');
+  var days = daysSel ? parseInt(daysSel.value) : 7;
+
+  body.innerHTML = '<p style="font-size:.82rem;color:var(--muted);">⏳ جارٍ حساب التقرير...</p>';
+
+  fetch(WORKER_URL + '/api/ai-usage-report', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ adminPassword: adminPass, days: days })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(res) {
+    if (!res || !res.ok) {
+      body.innerHTML = '<p style="font-size:.82rem;color:#c0392b;">❌ فشل تحميل التقرير: ' + escUsageHtml(res && (res.error || res.detail) || 'خطأ غير معروف') + '</p>';
+      return;
+    }
+    renderAiUsageReport(res);
+  })
+  .catch(function(e) {
+    body.innerHTML = '<p style="font-size:.82rem;color:#c0392b;">❌ تعذّر الاتصال بالخادم: ' + escUsageHtml(e.message) + '</p>';
+  });
+}
+
+function renderAiUsageReport(res) {
+  var body = document.getElementById('usage-report-body');
+  if (!body) return;
+  var t = res.totals;
+
+  var failRateTts = t.ttsCalls ? Math.round((t.ttsFail / t.ttsCalls) * 100) : 0;
+  var failRateChat = t.chatCalls ? Math.round((t.chatFail / t.chatCalls) * 100) : 0;
+
+  var html = '';
+
+  // ── ملخص عام ──
+  html += '<div class="mini-stats" style="grid-template-columns:repeat(3,1fr);margin-bottom:1.5rem;">';
+  html += '<div class="mini-stat-box"><div class="mini-stat-val">' + t.ttsChars.toLocaleString() + '</div><div class="mini-stat-key">حرف ElevenLabs</div></div>';
+  html += '<div class="mini-stat-box"><div class="mini-stat-val">~' + t.estCredits.toLocaleString() + '</div><div class="mini-stat-key">credit تقديري</div></div>';
+  html += '<div class="mini-stat-box"><div class="mini-stat-val">' + t.outTok.toLocaleString() + '</div><div class="mini-stat-key">Anthropic output tokens</div></div>';
+  html += '</div>';
+
+  // ── تحذيرات مباشرة ──
+  var warnings = [];
+  if (t.hitMaxTokens > 0) {
+    warnings.push('⚠️ <strong>' + t.hitMaxTokens + '</strong> رد من ' + t.chatCalls + ' تم "قطعه" لأنه وصل الحد الأقصى (max_tokens) — يعني ردود طويلة جداً تتحول لصوت طويل التكلفة. ننصح بتخفيض max_tokens أو تشديد تعليمات الاختصار في الـ system prompt.');
+  }
+  if (failRateTts >= 15) {
+    warnings.push('⚠️ نسبة فشل TTS (ElevenLabs) عالية: <strong>' + failRateTts + '%</strong> (' + t.ttsFail + ' من ' + t.ttsCalls + ') — غالباً رصيد منتهي أو تجاوز حد الاتصالات المتزامنة.');
+  }
+  if (failRateChat >= 15) {
+    warnings.push('⚠️ نسبة فشل محادثة AI (Anthropic) عالية: <strong>' + failRateChat + '%</strong> (' + t.chatFail + ' من ' + t.chatCalls + ') — تحقق من رصيد حساب Anthropic.');
+  }
+  if (warnings.length) {
+    html += '<div style="background:#fff8e1;border:1.5px solid #f9d71c;border-radius:10px;padding:1rem 1.25rem;margin-bottom:1.5rem;font-size:.82rem;line-height:1.9;">' + warnings.join('<br>') + '</div>';
+  }
+
+  // ── تفصيل حسب الكود ──
+  html += '<h4 style="font-size:.85rem;margin-bottom:.6rem;">📌 الاستهلاك حسب الكود (الأكثر تكلفة أولاً)</h4>';
+  if (!res.codesRanked || !res.codesRanked.length) {
+    html += '<p style="font-size:.8rem;color:var(--muted);margin-bottom:1.5rem;">لا توجد بيانات في هذه الفترة.</p>';
+  } else {
+    html += '<div style="overflow-x:auto;margin-bottom:1.5rem;"><table style="min-width:640px;">';
+    html += '<tr><th>الكود</th><th>TTS حرف</th><th>~credit</th><th>محادثات</th><th>قُطع (max_tokens)</th><th>Whisper</th><th>فشل TTS</th></tr>';
+    res.codesRanked.forEach(function(c) {
+      html += '<tr>' +
+        '<td style="font-weight:700;">' + escUsageHtml(c.code) + '</td>' +
+        '<td>' + c.ttsChars.toLocaleString() + '</td>' +
+        '<td>' + c.estCredits.toLocaleString() + '</td>' +
+        '<td>' + c.chatCalls + '</td>' +
+        '<td>' + (c.hitMaxTokens > 0 ? '<span class="badge badge-red">' + c.hitMaxTokens + '</span>' : '0') + '</td>' +
+        '<td>' + c.whisperCalls + '</td>' +
+        '<td>' + (c.ttsFail > 0 ? '<span class="badge badge-red">' + c.ttsFail + '</span>' : '0') + '</td>' +
+      '</tr>';
+    });
+    html += '</table></div>';
+  }
+
+  // ── أطول 10 نصوص أُرسلت لـ TTS (كشف أي رد شاذ الطول) ──
+  html += '<h4 style="font-size:.85rem;margin-bottom:.6rem;">🔎 أطول النصوص المُرسلة لـ ElevenLabs (احتمال شذوذ)</h4>';
+  if (!res.longestTtsCalls || !res.longestTtsCalls.length) {
+    html += '<p style="font-size:.8rem;color:var(--muted);">لا توجد بيانات.</p>';
+  } else {
+    html += '<div style="overflow-x:auto;"><table style="min-width:640px;">';
+    html += '<tr><th>الكود</th><th>عدد الحروف</th><th>التاريخ</th><th>معاينة النص</th></tr>';
+    res.longestTtsCalls.forEach(function(c) {
+      var d = new Date(c.ts);
+      html += '<tr>' +
+        '<td>' + escUsageHtml(c.code) + '</td>' +
+        '<td style="font-weight:700;">' + c.chars + '</td>' +
+        '<td style="white-space:nowrap;">' + d.toLocaleString('ar-TN') + '</td>' +
+        '<td style="font-size:.78rem;color:var(--muted);">' + escUsageHtml(c.preview) + '…</td>' +
+      '</tr>';
+    });
+    html += '</table></div>';
+  }
+
+  html += '<p class="admin-note" style="margin-top:1rem;">' + escUsageHtml(res.note || '') + ' — الأيام المقروءة: ' + (res.datesRead || []).join('، ') + '</p>';
+
+  body.innerHTML = html;
 }
 // =====================================================================
 // ================ SCHREIBEN — بطاقات نصية عبر Firebase ===============
@@ -11592,7 +11733,7 @@ async function afkarMoveGroup(id, direction) {
       case 'q1':
         return 'AKTUELLE PHASE: Der Kandidat hat soeben FRAGE 1 beantwortet (du hast jetzt 1 von 2 Fragen gestellt). Du MUSST jetzt noch FRAGE 2 stellen (die zweite und letzte Frage, ein anderer Aspekt des Themas) — schließe die Sitzung auf KEINEN FALL jetzt schon ab.';
       case 'q2':
-        return 'AKTUELLE PHASE: Der Kandidat hat soeben FRAGE 2 beantwortet (du hast jetzt 2 von 2 Fragen gestellt — fertig). Bedanke dich kurz, sage dass Teil 1 hiermit beendet ist, und stelle KEINE weitere Frage. Füge trotzdem "💡 Feedback:" hinzu.';
+        return 'AKTUELLE PHASE: ABSCHLUSS. Der Kandidat hat soeben FRAGE 2 beantwortet (2 von 2 Fragen — fertig). Deine Antwort MUSS NUR aus einem kurzen Dank + der Aussage bestehen, dass Teil 1 hiermit beendet ist. ABSOLUT VERBOTEN: KEIN Fragezeichen "?" irgendwo in deiner Antwort (außer eventuell in der Feedback-Zeile), KEINE dritte Frage, KEINE Aufforderung zur Vertiefung. Füge trotzdem eine "💡 Feedback:"-Zeile hinzu.';
       default:
         return 'AKTUELLE PHASE: Die Sitzung ist beendet. Antworte nur kurz und höflich, ohne neue Fragen.';
     }
@@ -11692,7 +11833,7 @@ async function afkarMoveGroup(id, direction) {
       case 'erfahrung':
         return 'AKTUELLE PHASE: Der Kandidat hat soeben von seiner ERFAHRUNG erzählt. Stelle jetzt FRAGE 4 (Vorteil ODER Nachteil — wähle genau einen Aspekt).';
       case 'vorteilnachteil':
-        return 'AKTUELLE PHASE: Der Kandidat hat soeben FRAGE 4 beantwortet — das war die letzte Frage. Bedanke dich kurz, sage dass Teil 2 hiermit beendet ist, und stelle KEINE weitere Frage. Füge trotzdem "💡 Feedback:" hinzu.';
+        return 'AKTUELLE PHASE: ABSCHLUSS. Der Kandidat hat soeben FRAGE 4 beantwortet — das war die letzte Frage. Deine Antwort MUSS NUR aus einem kurzen Dank + der Aussage bestehen, dass Teil 2 hiermit beendet ist. ABSOLUT VERBOTEN: KEIN Fragezeichen "?" irgendwo in deiner Antwort (außer eventuell in der Feedback-Zeile), KEINE fünfte Frage, KEINE Aufforderung zur Vertiefung. Füge trotzdem eine "💡 Feedback:"-Zeile hinzu.';
       default:
         return 'AKTUELLE PHASE: Die Sitzung ist beendet. Antworte nur kurz und höflich, ohne neue Fragen.';
     }
@@ -12153,6 +12294,17 @@ async function afkarMoveGroup(id, direction) {
     return text;
   }
 
+  // ── طبقة حماية إضافية: تفرض إغلاق نظيف بمرحلة الختام (q2 / vorteilnachteil) ──
+  // لو الموديل ضاف سؤال زيادة رغم منع صريح، نستبدل الجزء الرئيسي بجملة إغلاق ثابتة
+  // مع الحفاظ على سطر "💡 Feedback:" الأصلي (لو موجود) لأنه مفيد للطالب
+  function aiEnforceCleanClosing(reply, teilLabel) {
+    var feedbackMatch = reply.match(/💡\s*Feedback:[^\n]*/i);
+    var mainText = reply.replace(/💡\s*Feedback:[^\n]*/gi, '').trim();
+    if (mainText.indexOf('?') === -1) return reply; // ما فيه سؤال زيادة أصلاً — رجّع الرد كما هو
+    var closing = 'Vielen Dank für Ihre Antworten. ' + teilLabel + ' ist hiermit beendet.';
+    return feedbackMatch ? (closing + '\n' + feedbackMatch[0]) : closing;
+  }
+
   function aiSubmitUserText(text) {
     if (_aiLoading || _sessionEnded) return;
     aiAppendMessage('user', text);
@@ -12195,6 +12347,12 @@ async function afkarMoveGroup(id, direction) {
       // (لا تُطبَّق في مرحلة الختام لأن الشكر هناك مطلوب فعلاً)
       if ((_aiTeil === 't1' || _aiTeil === 't2') && !wasLastStage) {
         reply = aiStripLeadingFiller(reply);
+      }
+
+      // ✅ حماية إضافية أخرى: بمرحلة الختام تحديداً، لو الموديل ضاف سؤال زيادة رغم المنع
+      // الصريح، افرض جملة إغلاق ثابتة بدلاً منه (مع الحفاظ على الفيدباك الأصلي)
+      if (wasLastStage && (_aiTeil === 't1' || _aiTeil === 't2')) {
+        reply = aiEnforceCleanClosing(reply, _aiTeil === 't1' ? 'Teil 1' : 'Teil 2');
       }
 
       aiAppendMessage('bot', reply);
@@ -12782,12 +12940,14 @@ async function afkarMoveGroup(id, direction) {
         onSuccess(res.body.reply);
       } else {
         var rawErr = res.body ? ((res.body.error || '') + (res.body.detail ? ' ' + res.body.detail : '')) : ('HTTP ' + res.status);
+        rawErr = rawErr.trim();
         var detail = rawErr;
         if (/rate.limit|rate_limit|tokens per day|TPD/i.test(rawErr)) detail = 'ميزة التدرب مع ممتحنة AI تحت الصيانة (مشكلة 01)';
         else if (/not_found_error/i.test(rawErr)) detail = 'ميزة التدرب مع ممتحنة AI تحت الصيانة (الموديل غير متوفر — راجع worker)';
         else if (/ANTHROPIC_KEY not configured/i.test(rawErr)) detail = 'ميزة التدرب مع ممتحنة AI تحت الصيانة (مفتاح Anthropic غير مُعدّ)';
         else if (/GROQ_KEY not configured/i.test(rawErr)) detail = 'ميزة التدرب مع ممتحنة AI تحت الصيانة (مشكلة 04)';
         else if (/fetch error|network error|Failed to fetch/i.test(rawErr)) detail = '❌ تعذّر الاتصال بالخادم — تحقق من اتصال الإنترنت وحاول مرة أخرى';
+        else if (!rawErr) detail = 'ميزة التدرب مع ممتحنة AI تحت الصيانة (رد فارغ من الخادم — HTTP ' + res.status + ')';
         else detail = 'ميزة التدرب مع ممتحنة AI تحت الصيانة (مشكلة 00: ' + rawErr.substring(0, 60) + ')';
         onError(detail);
       }
