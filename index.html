@@ -11728,6 +11728,8 @@ async function afkarMoveGroup(id, direction) {
   // ── حالة الجلسة (State Machine) — Teil 1 ────────────────────────
   // المراحل: greeting → presentation → q1 → q2 → closing → done
   var _t1Stage = 'greeting';
+  var _t1StayCount = 0; // ✅ عدد مرات بقاء الذكاء الاصطناعي على نفس السؤال لأن الطالب لم يجب فعلياً
+  var T1_MAX_STAY = 2; // ✅ حد أقصى قبل الانتقال الجبري لمنع التعليق اللا نهائي
 
   // البنية الثابتة لـ Teil 1 — لا تتغير أبداً مهما طالت المحادثة
   var T1_BASE_PROMPT =
@@ -11749,7 +11751,11 @@ async function afkarMoveGroup(id, direction) {
     '- Jede deine Antwort (außer der Begrüßung) endet mit einer Zeile "💡 Feedback:" auf Arabisch — 1 kurzer, konkreter Satz zu einem Grammatik- oder Wortschatzpunkt aus der letzten Antwort des Kandidaten.\n' +
     '- Antworte IMMER auf Deutsch (B2-Niveau, klar und natürlich). Falls der Kandidat auf Arabisch antwortet, bitte ihn höflich auf Deutsch fortzufahren — das zählt nicht als eine der 2 Fragen.\n' +
     '- Sei unterstützend und ermutigend, wie eine echte, freundliche Prüferin.\n' +
-    '- ABSOLUT VERBOTEN: Schreibe NIEMALS Regieanweisungen, Szenarien, Klammern wie "(Warte auf...)", "Nach der Präsentation:" oder ähnliches. Antworte IMMER nur mit dem, was du JETZT in diesem Moment sagst — nicht was du in der Zukunft sagen wirst.';
+    '- ABSOLUT VERBOTEN: Schreibe NIEMALS Regieanweisungen, Szenarien, Klammern wie "(Warte auf...)", "Nach der Präsentation:" oder ähnliches. Antworte IMMER nur mit dem, was du JETZT in diesem Moment sagst — nicht was du in der Zukunft sagen wirst.\n\n' +
+    'ANPASSUNG AN DEN KANDIDATEN (SEHR WICHTIG): Du bist KEIN starrer Frage-Automat. Lies die letzte Antwort des Kandidaten genau, bevor du reagierst:\n' +
+    '- Wenn der Kandidat WIRKLICH inhaltlich geantwortet hat (auch kurz, auch mit Fehlern, auch unsicher) → gehe normal zum nächsten Schritt über.\n' +
+    '- Wenn der Kandidat NICHT wirklich geantwortet/präsentiert hat — z.B. "Ich kann nicht", "Ich weiß nicht", er bittet um Hilfe, antwortet komplett irrelevant/leer, oder wirkt verwirrt/blockiert → gehe NICHT weiter. Reagiere stattdessen kurz ermutigend (z.B. "Kein Problem, ich helfe Ihnen."), gib einen kleinen konkreten Denkanstoß oder ein einfaches Beispiel auf Deutsch, und stelle DIESELBE Frage/Aufforderung nochmal in einfacheren, kürzeren Worten. Bleib beim selben Schritt — erfinde KEINE neue, andere Frage.\n' +
+    '- MARKER (GANZ WICHTIG, PFLICHT): Füge nach deiner gesamten Antwort (nach der "💡 Feedback:"-Zeile, falls vorhanden) in einer eigenen, neuen Zeile GENAU einen der folgenden zwei Marker hinzu — er ist für den Kandidaten unsichtbar und wird automatisch entfernt: "[[ADVANCE]]" falls du zum nächsten Schritt übergegangen bist, ODER "[[STAY]]" falls du beim selben Schritt geblieben bist, weil der Kandidat nicht wirklich geantwortet hat.';
 
   // يولّد تعليمات إضافية تحدد "أين نحن الآن بالضبط" — تُضاف فوق البرومبت الأساسي
   function t1StageInstruction(stage) {
@@ -11757,13 +11763,19 @@ async function afkarMoveGroup(id, direction) {
       case 'greeting':
         return 'AKTUELLE PHASE: Begrüßung. Sage GENAU diesen Text und nichts anderes: "Hallo und herzlich willkommen! Heute werden Sie ein Thema präsentieren, das Sie interessiert. Sie können zum Beispiel über ein Buch, einen Film, eine Reise oder eine wichtige Person sprechen.\nJetzt sind Sie dran: Welches Thema möchten Sie präsentieren, und warum?" — Verwende KEINESFALLS das Wort "Frage" in diesem Text (es ist noch keine der 2 offiziellen Fragen, nur eine Aufforderung zur Präsentation). Füge KEINE "💡 Feedback:"-Zeile hinzu.';
       case 'presentation':
-        return 'AKTUELLE PHASE: Der Kandidat hat gerade sein Thema präsentiert. Das war NOCH KEINE der 2 offiziellen Fragen — du hast bisher 0 von 2 Fragen gestellt. Stelle JETZT SOFORT FRAGE 1 (die allererste der genau 2 offiziellen Fragen) zu einem Aspekt der Präsentation — OHNE jede Einleitung. Beginne deine Antwort NICHT mit "Vielen Dank", "Das ist ein schönes/persönliches Thema", "Ich möchte mehr erfahren" oder Ähnlichem — das erste Wort deiner Antwort muss bereits Teil der Frage selbst sein.';
+        return 'AKTUELLE PHASE: Der Kandidat sollte gerade sein Thema präsentiert haben (0 von 2 Fragen bisher gestellt). Prüfe: Hat er wirklich präsentiert (auch kurz/fehlerhaft), oder nicht wirklich (z.B. "Ich kann nicht", "Ich weiß nicht", bittet um Hilfe, irrelevant/leer)? ' +
+          'FALL A — er hat präsentiert: Stelle JETZT SOFORT FRAGE 1 (die allererste der genau 2 offiziellen Fragen) zu einem Aspekt der Präsentation — OHNE jede Einleitung. Beginne deine Antwort NICHT mit "Vielen Dank", "Das ist ein schönes/persönliches Thema", "Ich möchte mehr erfahren" oder Ähnlichem — das erste Wort deiner Antwort muss bereits Teil der Frage selbst sein. Marker: [[ADVANCE]]. ' +
+          'FALL B — er hat NICHT wirklich präsentiert: Ermutige ihn kurz, gib ein einfaches Beispielthema oder einen kleinen Denkanstoß, und bitte ihn nochmal einfacher, sein Thema kurz vorzustellen. Marker: [[STAY]].';
       case 'q1':
-        return 'AKTUELLE PHASE: Der Kandidat hat soeben FRAGE 1 beantwortet (du hast jetzt 1 von 2 Fragen gestellt). Du MUSST jetzt noch FRAGE 2 stellen (die zweite und letzte Frage, ein anderer Aspekt des Themas) — schließe die Sitzung auf KEINEN FALL jetzt schon ab.';
+        return 'AKTUELLE PHASE: Der Kandidat sollte soeben FRAGE 1 beantwortet haben (1 von 2 Fragen bisher gestellt). Hat er das wirklich getan? ' +
+          'FALL A — ja: Du MUSST jetzt noch FRAGE 2 stellen (die zweite und letzte Frage, ein anderer Aspekt des Themas) — schließe die Sitzung auf KEINEN FALL jetzt schon ab. Marker: [[ADVANCE]]. ' +
+          'FALL B — er hat NICHT wirklich geantwortet (z.B. "weiß nicht", "kann nicht", bittet um Hilfe): Ermutige ihn kurz, gib ein einfaches Beispiel, und stelle dieselbe FRAGE 1 nochmal in einfacheren Worten — gehe NICHT zu Frage 2 über. Marker: [[STAY]].';
       case 'q2':
-        return 'AKTUELLE PHASE: ABSCHLUSS. Der Kandidat hat soeben FRAGE 2 beantwortet (2 von 2 Fragen — fertig). Deine Antwort MUSS NUR aus einem kurzen Dank + der Aussage bestehen, dass Teil 1 hiermit beendet ist. ABSOLUT VERBOTEN: KEIN Fragezeichen "?" irgendwo in deiner Antwort (außer eventuell in der Feedback-Zeile), KEINE dritte Frage, KEINE Aufforderung zur Vertiefung. Füge trotzdem eine "💡 Feedback:"-Zeile hinzu.';
+        return 'AKTUELLE PHASE: Der Kandidat sollte soeben FRAGE 2 beantwortet haben (2 von 2 Fragen). Hat er das wirklich getan? ' +
+          'FALL A — ja: ABSCHLUSS. Deine Antwort MUSS NUR aus einem kurzen Dank + der Aussage bestehen, dass Teil 1 hiermit beendet ist. ABSOLUT VERBOTEN: KEIN Fragezeichen "?" irgendwo in deiner Antwort (außer eventuell in der Feedback-Zeile), KEINE dritte Frage, KEINE Aufforderung zur Vertiefung. Füge trotzdem eine "💡 Feedback:"-Zeile hinzu. Marker: [[ADVANCE]]. ' +
+          'FALL B — er hat NICHT wirklich geantwortet: Schließe NOCH NICHT ab. Ermutige ihn kurz, gib ein einfaches Beispiel, und stelle dieselbe FRAGE 2 nochmal in einfacheren Worten. Marker: [[STAY]].';
       default:
-        return 'AKTUELLE PHASE: Die Sitzung ist beendet. Antworte nur kurz und höflich, ohne neue Fragen.';
+        return 'AKTUELLE PHASE: Die Sitzung ist beendet. Antworte nur kurz und höflich, ohne neue Fragen. Marker: [[ADVANCE]].';
     }
   }
 
@@ -11774,12 +11786,15 @@ async function afkarMoveGroup(id, direction) {
     return t1StageInstruction(stage) + '\n\n' + T1_BASE_PROMPT +
       '\n\nERINNERUNG (SEHR WICHTIG): Die "AKTUELLE PHASE"-Anweisung ganz oben hat IMMER Vorrang vor der allgemeinen ABLAUF-Beschreibung. ' +
       'Wiederhole NIEMALS die Begrüßung oder die ursprüngliche Aufforderung ("Welches Thema möchten Sie präsentieren...") erneut, wenn die aktuelle Phase nicht "greeting" ist — das wäre ein Fehler. ' +
-      'Schau IMMER auf die letzte Nachricht des Kandidaten (role: user) und beziehe dich in deiner Frage konkret auf einen Punkt daraus.';
+      'Schau IMMER auf die letzte Nachricht des Kandidaten (role: user) und beziehe dich in deiner Frage/Ermutigung konkret auf einen Punkt daraus. ' +
+      'Vergiss NIEMALS den Marker "[[ADVANCE]]" oder "[[STAY]]" am Ende deiner Antwort (siehe FALL A / FALL B oben) — er ist Pflicht in jeder Antwort außer der Begrüßung.';
   }
 
   // ── حالة الجلسة (State Machine) — Teil 2 ────────────────────────
   // المراحل: greeting → inhalt → meinung → erfahrung → vorteilnachteil → closing → done
   var _t2Stage = 'greeting';
+  var _t2StayCount = 0; // ✅ عدد مرات بقاء الذكاء الاصطناعي على نفس السؤال لأن الطالب لم يجب فعلياً
+  var T2_MAX_STAY = 2; // ✅ حد أقصى قبل الانتقال الجبري لمنع التعليق اللا نهائي
   var _t2Topic = null; // الموضوع الحقيقي المختار من بنك اختبارات Teil 2
   var _t2TopicIdx = null; // فهرس الموضوع في البنك — يُستخدم لحفظ/عرض نتيجة هذا الاختبار تحديداً
 
@@ -11845,7 +11860,11 @@ async function afkarMoveGroup(id, direction) {
       '- Jede deine Antwort (außer der Begrüßung) endet mit einer Zeile "💡 Feedback:" auf Arabisch — 1 kurzer, konkreter Satz zu einem Grammatik- oder Wortschatzpunkt aus der letzten Antwort des Kandidaten.\n' +
       '- Antworte IMMER auf Deutsch (B2-Niveau, klar und natürlich). Falls der Kandidat auf Arabisch antwortet, bitte ihn höflich auf Deutsch fortzufahren — das zählt nicht als eine der 4 Fragen.\n' +
       '- Sei unterstützend und ermutigend, wie eine echte, freundliche Prüferin.\n' +
-      '- ABSOLUT VERBOTEN: Schreibe NIEMALS Regieanweisungen, Szenarien oder Klammern wie "(Warte auf...)". Antworte NUR mit dem, was du JETZT sagst.'
+      '- ABSOLUT VERBOTEN: Schreibe NIEMALS Regieanweisungen, Szenarien oder Klammern wie "(Warte auf...)". Antworte NUR mit dem, was du JETZT sagst.\n\n' +
+      'ANPASSUNG AN DEN KANDIDATEN (SEHR WICHTIG): Du bist KEIN starrer Frage-Automat. Lies die letzte Antwort des Kandidaten genau, bevor du reagierst:\n' +
+      '- Wenn der Kandidat WIRKLICH inhaltlich geantwortet hat (auch kurz, auch mit Fehlern, auch unsicher) → gehe normal zur nächsten Frage über.\n' +
+      '- Wenn der Kandidat NICHT wirklich geantwortet hat — z.B. "Ich kann nicht", "Ich weiß nicht", er bittet um Hilfe, antwortet komplett irrelevant/leer, oder wirkt verwirrt/blockiert → gehe NICHT zur nächsten Frage über. Reagiere stattdessen kurz ermutigend (z.B. "Kein Problem, ich helfe Ihnen."), gib einen kleinen konkreten Denkanstoß oder ein einfaches Beispiel auf Deutsch, und stelle DIESELBE Frage nochmal in einfacheren, kürzeren Worten. Bleib beim selben Punkt (Inhalt/Meinung/Erfahrung/Vorteil-Nachteil) — erfinde KEINE neue, andere Frage und wiederhole NICHT einfach wortwörtlich dieselbe Formulierung, die ihn schon blockiert hat.\n' +
+      '- MARKER (GANZ WICHTIG, PFLICHT): Füge nach deiner gesamten Antwort (nach der "💡 Feedback:"-Zeile, falls vorhanden) in einer eigenen, neuen Zeile GENAU einen der folgenden zwei Marker hinzu — er ist für den Kandidaten unsichtbar und wird automatisch entfernt: "[[ADVANCE]]" falls du zur nächsten Frage übergegangen bist, ODER "[[STAY]]" falls du bei derselben Frage geblieben bist, weil der Kandidat nicht wirklich geantwortet hat.'
     );
   }
 
@@ -11855,15 +11874,19 @@ async function afkarMoveGroup(id, direction) {
       case 'greeting':
         return 'AKTUELLE PHASE: Begrüßung. Sage GENAU diesen Text und nichts anderes: "Hallo! Ich bin Frau Müller, Ihre Prüferin. Können Sie den Inhalt des Textes zusammenfassen?" — Füge KEINE "💡 Feedback:"-Zeile hinzu.';
       case 'inhalt':
-        return 'AKTUELLE PHASE: Der Kandidat hat soeben den INHALT zusammengefasst. Stelle JETZT SOFORT FRAGE 2 (die Meinungsfrage) — OHNE jede Einleitung. Beginne NICHT mit "Vielen Dank", "Das ist interessant" oder Ähnlichem — das erste Wort muss bereits Teil der Frage sein.';
+        return 'AKTUELLE PHASE: Der Kandidat sollte soeben den INHALT zusammenfassen. Prüfe zuerst: Hat er das WIRKLICH getan (auch kurz/fehlerhaft), oder hat er nicht wirklich geantwortet (z.B. "Ich kann nicht", "Ich weiß nicht", bittet um Hilfe, irrelevant/leer)? ' +
+          'FALL A — er hat inhaltlich geantwortet: Stelle SOFORT FRAGE 2 (die Meinungsfrage) — OHNE jede Einleitung. Beginne NICHT mit "Vielen Dank", "Das ist interessant" oder Ähnlichem — das erste Wort muss bereits Teil der Frage sein. Marker: [[ADVANCE]]. ' +
+          'FALL B — er hat NICHT wirklich geantwortet: Reagiere kurz ermutigend, gib einen kleinen Hinweis worum es im Text geht (ohne die Zusammenfassung für ihn zu machen), und bitte ihn nochmal in einfacheren Worten, kurz zu sagen worum es im Text geht. Marker: [[STAY]].';
       case 'meinung':
-        return 'AKTUELLE PHASE: Der Kandidat hat soeben seine MEINUNG geäußert. Stelle jetzt FRAGE 3 (die Erfahrungsfrage).';
+        return 'AKTUELLE PHASE: Der Kandidat sollte soeben seine MEINUNG äußern. Hat er das wirklich getan? Falls ja: Stelle jetzt FRAGE 3 (die Erfahrungsfrage). Marker: [[ADVANCE]]. Falls er nicht wirklich geantwortet hat (z.B. "weiß nicht", "kann nicht", bittet um Hilfe): ermutige ihn kurz, gib ein einfaches Beispiel für eine mögliche Meinung, und stelle dieselbe Meinungsfrage nochmal einfacher. Marker: [[STAY]].';
       case 'erfahrung':
-        return 'AKTUELLE PHASE: Der Kandidat hat soeben von seiner ERFAHRUNG erzählt. Stelle jetzt FRAGE 4 (Vorteil ODER Nachteil — wähle genau einen Aspekt).';
+        return 'AKTUELLE PHASE: Der Kandidat sollte soeben von seiner ERFAHRUNG erzählen. Hat er das wirklich getan? Falls ja: Stelle jetzt FRAGE 4 (Vorteil ODER Nachteil — wähle genau einen Aspekt). Marker: [[ADVANCE]]. Falls er nicht wirklich geantwortet hat: ermutige ihn kurz (z.B. dass auch eine kleine, alltägliche Erfahrung reicht), gib ein kurzes Beispiel, und stelle dieselbe Erfahrungsfrage nochmal einfacher. Marker: [[STAY]].';
       case 'vorteilnachteil':
-        return 'AKTUELLE PHASE: ABSCHLUSS. Der Kandidat hat soeben FRAGE 4 beantwortet — das war die letzte Frage. Deine Antwort MUSS NUR aus einem kurzen Dank + der Aussage bestehen, dass Teil 2 hiermit beendet ist. ABSOLUT VERBOTEN: KEIN Fragezeichen "?" irgendwo in deiner Antwort (außer eventuell in der Feedback-Zeile), KEINE fünfte Frage, KEINE Aufforderung zur Vertiefung. Füge trotzdem eine "💡 Feedback:"-Zeile hinzu.';
+        return 'AKTUELLE PHASE: Der Kandidat sollte soeben FRAGE 4 (Vorteil/Nachteil) beantwortet haben. Hat er das wirklich getan? ' +
+          'FALL A — er hat inhaltlich geantwortet: Das war die letzte Frage — ABSCHLUSS. Deine Antwort MUSS NUR aus einem kurzen Dank + der Aussage bestehen, dass Teil 2 hiermit beendet ist. ABSOLUT VERBOTEN: KEIN Fragezeichen "?" irgendwo in deiner Antwort (außer eventuell in der Feedback-Zeile), KEINE fünfte Frage, KEINE Aufforderung zur Vertiefung. Füge trotzdem eine "💡 Feedback:"-Zeile hinzu. Marker: [[ADVANCE]]. ' +
+          'FALL B — er hat NICHT wirklich geantwortet: Schließe NOCH NICHT ab. Ermutige ihn kurz, gib ein einfaches Beispiel für einen Vorteil/Nachteil, und stelle dieselbe Frage nochmal einfacher. Marker: [[STAY]].';
       default:
-        return 'AKTUELLE PHASE: Die Sitzung ist beendet. Antworte nur kurz und höflich, ohne neue Fragen.';
+        return 'AKTUELLE PHASE: Die Sitzung ist beendet. Antworte nur kurz und höflich, ohne neue Fragen. Marker: [[ADVANCE]].';
     }
   }
 
@@ -11873,7 +11896,8 @@ async function afkarMoveGroup(id, direction) {
     return t2StageInstruction(stage) + '\n\n' + t2BuildBasePrompt(_t2Topic) +
       '\n\nERINNERUNG (SEHR WICHTIG): Die "AKTUELLE PHASE"-Anweisung ganz oben hat IMMER Vorrang. ' +
       'Wiederhole NIEMALS die Begrüßung ("Hallo! Ich bin Frau Müller...") erneut, wenn die aktuelle Phase nicht "greeting" ist. ' +
-      'Beziehe dich in deiner Frage IMMER konkret auf die letzte Antwort des Kandidaten (role: user).';
+      'Beziehe dich in deiner Frage/Ermutigung IMMER konkret auf die letzte Antwort des Kandidaten (role: user). ' +
+      'Vergiss NIEMALS den Marker "[[ADVANCE]]" oder "[[STAY]]" am Ende deiner Antwort (siehe FALL A / FALL B oben) — er ist Pflicht in jeder Antwort außer der Begrüßung.';
   }
 
   // ينقل حالة Teil 2 للمرحلة التالية بعد كل رد من الطالب
@@ -12104,7 +12128,9 @@ async function afkarMoveGroup(id, direction) {
     _sessionStarted = false;
     _sessionEnded = false;
     _t1Stage = 'greeting';
+    _t1StayCount = 0;
     _t2Stage = 'greeting';
+    _t2StayCount = 0;
     _t2Topic = null;
     _t2TopicIdx = null;
     _t3Topic = null;
@@ -12327,6 +12353,18 @@ async function afkarMoveGroup(id, direction) {
     return feedbackMatch ? (closing + '\n' + feedbackMatch[0]) : closing;
   }
 
+  // ── T1/T2: يقرأ ماركر [[ADVANCE]] / [[STAY]] من رد الموديل ويشيله من النص المعروض/المنطوق ──
+  // يرجّع { text, advance } — advance = true افتراضياً لو الماركر غايب (حماية من التعليق)
+  function aiParseAdvanceMarker(reply) {
+    var advance = true;
+    var m = reply.match(/\[\[\s*(ADVANCE|STAY)\s*\]\]/i);
+    if (m) {
+      advance = m[1].toUpperCase() === 'ADVANCE';
+      reply = reply.replace(/\s*\[\[\s*(ADVANCE|STAY)\s*\]\]\s*/i, '').trim();
+    }
+    return { text: reply, advance: advance };
+  }
+
   function aiSubmitUserText(text) {
     if (_aiLoading || _sessionEnded) return;
     aiAppendMessage('user', text);
@@ -12365,25 +12403,46 @@ async function afkarMoveGroup(id, direction) {
         if (_t3TurnCount >= T3_MAX_TURNS) t3AgreementReached = true;
       }
 
+      // ✅ T1/T2: اقرأ ماركر [[ADVANCE]] / [[STAY]] — يحدد هل الطالب أجاب فعلياً أم لا.
+      // لو بقي "عالق" (STAY) عدة مرات متتالية على نفس السؤال، انتقل جبرياً للسؤال التالي
+      // لمنع محادثة معلّقة لا تتقدّم أبداً.
+      var t1Advance = true, t2Advance = true;
+      if (_aiTeil === 't1') {
+        var parsed1 = aiParseAdvanceMarker(reply);
+        reply = parsed1.text;
+        t1Advance = parsed1.advance;
+        if (!t1Advance && _t1StayCount >= T1_MAX_STAY) t1Advance = true; // ✅ سقف الأمان
+        _t1StayCount = t1Advance ? 0 : _t1StayCount + 1;
+      }
+      if (_aiTeil === 't2') {
+        var parsed2 = aiParseAdvanceMarker(reply);
+        reply = parsed2.text;
+        t2Advance = parsed2.advance;
+        if (!t2Advance && _t2StayCount >= T2_MAX_STAY) t2Advance = true; // ✅ سقف الأمان
+        _t2StayCount = t2Advance ? 0 : _t2StayCount + 1;
+      }
+      var isClosingNow = (_aiTeil === 't1' && wasLastStage && t1Advance) ||
+                          (_aiTeil === 't2' && wasLastStage && t2Advance);
+
       // ✅ حماية إضافية: شيل أي جملة شكر/مجاملة تمهيدية تجاهل الموديل منعها
-      // (لا تُطبَّق في مرحلة الختام لأن الشكر هناك مطلوب فعلاً)
-      if ((_aiTeil === 't1' || _aiTeil === 't2') && !wasLastStage) {
+      // (لا تُطبَّق في مرحلة الختام الفعلية لأن الشكر هناك مطلوب فعلاً)
+      if ((_aiTeil === 't1' || _aiTeil === 't2') && !isClosingNow) {
         reply = aiStripLeadingFiller(reply);
       }
 
-      // ✅ حماية إضافية أخرى: بمرحلة الختام تحديداً، لو الموديل ضاف سؤال زيادة رغم المنع
+      // ✅ حماية إضافية أخرى: بمرحلة الختام الفعلية تحديداً، لو الموديل ضاف سؤال زيادة رغم المنع
       // الصريح، افرض جملة إغلاق ثابتة بدلاً منه (مع الحفاظ على الفيدباك الأصلي)
-      if (wasLastStage && (_aiTeil === 't1' || _aiTeil === 't2')) {
+      if (isClosingNow) {
         reply = aiEnforceCleanClosing(reply, _aiTeil === 't1' ? 'Teil 1' : 'Teil 2');
       }
 
       aiAppendMessage('bot', reply);
       _aiHistory.push({ role: 'assistant', content: reply });
 
-      if (_aiTeil === 't1') t1AdvanceStage();
-      if (_aiTeil === 't2') t2AdvanceStage();
+      if (_aiTeil === 't1' && t1Advance) t1AdvanceStage();
+      if (_aiTeil === 't2' && t2Advance) t2AdvanceStage();
 
-      var isLastTurn = wasLastStage || t3AgreementReached;
+      var isLastTurn = isClosingNow || t3AgreementReached;
 
       if (isLastTurn) {
         // انتهت الجلسة — أغلق المايك فوراً قبل تشغيل الصوت لمنع أي تفاعل إضافي
