@@ -1281,14 +1281,7 @@ function buildHv2Card(exam) {
     var _kw2 = (exam.keywords && exam.keywords[i-1]) ? exam.keywords[i-1] : '';
     var _r2 = _kw2 ? { html: highlightKeywords(exam.sentences[i-1]||'', _kw2), found: false } : highlightTitleInSentence(exam.sentences[i-1]||'', exam.title||'', hv2TitleHighlighted);
     if (_r2.found) hv2TitleHighlighted = true;
-    var _sentId2 = 'hv2-sent-' + exam.id + '-' + i;
-    html += '<td style="font-size:.8rem;line-height:1.4;word-wrap:break-word;padding:.45rem 1.6rem .45rem .4rem;position:relative;">'
-      + '<span id="' + _sentId2 + '">' + i + '. ' + _r2.html + '</span>'
-      + '<button onclick="hvTranslate(this,\'' + _sentId2 + '\')" style="position:absolute;top:.4rem;right:.15rem;display:inline-flex;align-items:center;justify-content:center;background:none;border:none;cursor:pointer;padding:.1rem;opacity:.4;" title="ترجمة">'
-      + '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20"/></svg>'
-      + '</button>'
-      + '<div id="' + _sentId2 + '-tr" style="display:none;direction:rtl;text-align:right;font-size:.76rem;color:#7a4020;background:#f0ddd2;border-radius:5px;padding:.2rem .45rem;margin-top:.2rem;line-height:1.6;"></div>'
-      + '</td>';
+    html += '<td style="font-size:.8rem;line-height:1.4;word-wrap:break-word;padding:.45rem .4rem;">' + i + '. ' + _r2.html + '</td>';
     html += '</tr>';
   }
   html += '</tbody></table>';
@@ -1373,14 +1366,7 @@ function buildHv3Card(exam) {
     var _kw3 = (exam.keywords && exam.keywords[i-1]) ? exam.keywords[i-1] : '';
     var _r3 = _kw3 ? { html: highlightKeywords(exam.sentences[i-1]||'', _kw3), found: false } : highlightTitleInSentence(exam.sentences[i-1]||'', exam.title||'', hv3TitleHighlighted);
     if (_r3.found) hv3TitleHighlighted = true;
-    var _sentId3 = 'hv3-sent-' + exam.id + '-' + i;
-    html += '<td style="position:relative;padding-right:1.6rem;">'
-      + '<span id="' + _sentId3 + '">' + i + '. ' + _r3.html + '</span>'
-      + '<button onclick="hvTranslate(this,\'' + _sentId3 + '\')" style="position:absolute;top:.5rem;right:.15rem;display:inline-flex;align-items:center;justify-content:center;background:none;border:none;cursor:pointer;padding:.1rem;opacity:.4;" title="ترجمة">'
-      + '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20"/></svg>'
-      + '</button>'
-      + '<div id="' + _sentId3 + '-tr" style="display:none;direction:rtl;text-align:right;font-size:.76rem;color:#7a4020;background:#f0ddd2;border-radius:5px;padding:.2rem .45rem;margin-top:.2rem;line-height:1.6;"></div>'
-      + '</td>';
+    html += '<td>' + i + '. ' + _r3.html + '</td>';
     html += '</tr>';
   }
   html += '</tbody></table>';
@@ -1622,16 +1608,6 @@ applyHv3AdminData();</script>
       <div class="cat-kicker">SPRACHBAUSTEINE — TEIL 1</div>
       <h1 class="cat-title" id="sb1-exam-title">Prüfung 01</h1>
       <p class="cat-lead" style="font-size:.85rem;">Lesen Sie den Text und wählen Sie für die Lücken (1–10) die richtige Antwort.</p>
-      <div style="margin-top:.6rem;position:relative;display:inline-block;">
-        <button id="sb1-islah-btn" onclick="sb1ToggleIslah()" style="display:inline-flex;align-items:center;gap:.38rem;background:transparent;color:var(--muted);border:1.5px solid var(--border);border-radius:8px;padding:.28rem .75rem;font-size:.72rem;font-weight:500;font-family:'DM Sans',sans-serif;cursor:pointer;transition:color .15s,border-color .15s,background .15s;letter-spacing:.01em;" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)';this.style.background='var(--accent-light)'" onmouseout="if(!window._sb1IslahOpen){this.style.borderColor='var(--border)';this.style.color='var(--muted)';this.style.background='transparent'}">
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-          الإصلاح
-        </button>
-        <div id="sb1-islah-panel" style="display:none;position:fixed;z-index:99999;background:#fff;border:2px solid var(--accent);border-radius:14px;box-shadow:0 8px 28px rgba(0,0,0,.18);padding:.55rem .55rem .45rem;min-width:190px;max-width:240px;max-height:60vh;overflow-y:auto;animation:sbPopIn .18s cubic-bezier(.2,.8,.4,1.1);">
-          <div style="font-size:.72rem;font-weight:700;color:var(--accent);text-align:center;padding-bottom:.35rem;border-bottom:1px solid #e2dbd0;letter-spacing:.04em;margin-bottom:.35rem;">✅ الإجابات الصحيحة</div>
-          <div id="sb1-islah-content" style="display:flex;flex-direction:column;gap:.22rem;"></div>
-        </div>
-      </div>
     </div>
   </div>
   <div class="content-area">
@@ -1659,16 +1635,6 @@ applyHv3AdminData();</script>
       <div class="cat-kicker">SPRACHBAUSTEINE — TEIL 2</div>
       <h1 class="cat-title" id="sb2-exam-title">Prüfung 01</h1>
       <p class="cat-lead" style="font-size:.85rem;">Lesen Sie den Text und wählen Sie für die Lücken (1–10) die richtige Antwort.</p>
-      <div style="margin-top:.6rem;position:relative;display:inline-block;">
-        <button id="sb2-islah-btn" onclick="sb2ToggleIslah()" style="display:inline-flex;align-items:center;gap:.38rem;background:transparent;color:var(--muted);border:1.5px solid var(--border);border-radius:8px;padding:.28rem .75rem;font-size:.72rem;font-weight:500;font-family:'DM Sans',sans-serif;cursor:pointer;transition:color .15s,border-color .15s,background .15s;letter-spacing:.01em;" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)';this.style.background='var(--accent-light)'" onmouseout="if(!window._sb2IslahOpen){this.style.borderColor='var(--border)';this.style.color='var(--muted)';this.style.background='transparent'}">
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-          الإصلاح
-        </button>
-        <div id="sb2-islah-panel" style="display:none;position:fixed;z-index:99999;background:#fff;border:2px solid var(--accent);border-radius:14px;box-shadow:0 8px 28px rgba(0,0,0,.18);padding:.55rem .55rem .45rem;min-width:190px;max-width:240px;max-height:60vh;overflow-y:auto;animation:sbPopIn .18s cubic-bezier(.2,.8,.4,1.1);">
-          <div style="font-size:.72rem;font-weight:700;color:var(--accent);text-align:center;padding-bottom:.35rem;border-bottom:1px solid #e2dbd0;letter-spacing:.04em;margin-bottom:.35rem;">✅ الإجابات الصحيحة</div>
-          <div id="sb2-islah-content" style="display:flex;flex-direction:column;gap:.22rem;"></div>
-        </div>
-      </div>
     </div>
   </div>
   <div class="content-area">
@@ -1746,6 +1712,12 @@ applyHv3AdminData();</script>
               style="width:52px;border:none;background:transparent;font-size:.9rem;font-weight:700;color:var(--accent);text-align:center;outline:none;">
             <span style="font-size:.8rem;color:var(--muted);">يوم</span>
           </div>
+          <div style="display:flex;align-items:center;gap:.4rem;background:var(--cream);border:1px solid var(--border);border-radius:4px;padding:.4rem .75rem;white-space:nowrap;">
+            <span style="font-size:.9rem;">🎙️</span>
+            <label for="ai-sessions-input" style="font-size:.8rem;font-weight:600;color:var(--ink);">جلسات AI:</label>
+            <input type="number" id="ai-sessions-input" min="3" max="999" value="3"
+              style="width:46px;border:none;background:transparent;font-size:.9rem;font-weight:700;color:var(--accent);text-align:center;outline:none;">
+          </div>
           <button class="btn-primary" onclick="addCode()" style="white-space:nowrap;">✚ إنشاء</button>
         </div>
         <div style="display:flex;gap:.5rem;margin-top:.65rem;flex-wrap:wrap;">
@@ -1759,7 +1731,7 @@ applyHv3AdminData();</script>
           </button>
         </div>
         <p class="admin-note" id="code-validity-note">الكود سيكون صالحاً لمدة <strong>يوم واحد</strong> من تاريخ الإنشاء — <span id="code-type-note" style="color:var(--accent);font-weight:600;">📱 هاتف واحد فقط</span>.</p>
-        <p class="admin-note" style="color:var(--muted);">🎙️ ميزة الممتحنة AI متاحة بلا حدود لكل الأكواد — لا يوجد أي حد لعدد الجلسات.</p>
+        <p class="admin-note" id="ai-sessions-note" style="color:var(--muted);">🎙️ عدد جلسات الممتحنة AI: <strong>0 = الميزة غير مفعّلة</strong> لهذا الكود. العدد مشترك بين كل من يستعمل هذا الكود.</p>
       </div>
 
 
@@ -2559,6 +2531,31 @@ applyHv3AdminData();</script>
 
     <!-- ===== USAGE / تحليل استهلاك ممتحنة AI ===== -->
     <div id="tab-panel-usage" style="display:none;">
+      <div class="admin-form-card" id="breaker-card" style="margin-bottom:1rem;">
+        <h3 style="margin-bottom:.5rem;">🛑 قاطع الدائرة — الحماية النهائية من استنزاف الرصيد</h3>
+        <p style="font-size:.78rem;color:var(--muted);margin-bottom:1rem;line-height:1.5;">سقف يومي صارم (لكل كود + للمنصة كاملة). إذا تجاوزه أي استهلاك — مهما كان السبب (بوت، توكن مسروق، أو حتى استعمال شرعي مبالغ) — يتوقف تلقائياً بدل ما يستنزف رصيدك بالكامل.</p>
+        <div id="breaker-status" style="margin-bottom:1rem;font-size:.85rem;">⏳ جارٍ التحميل...</div>
+        <div id="breaker-fields" style="display:none;">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-bottom:1rem;">
+            <label style="font-size:.75rem;color:var(--muted);">سقف يومي/كود — توكنز Anthropic
+              <input type="number" id="cfg-perCodeDailyMaxOutTok" class="admin-input" style="width:100%;margin-top:.2rem;">
+            </label>
+            <label style="font-size:.75rem;color:var(--muted);">سقف يومي/كود — credits ElevenLabs
+              <input type="number" id="cfg-perCodeDailyMaxTtsCredits" class="admin-input" style="width:100%;margin-top:.2rem;">
+            </label>
+            <label style="font-size:.75rem;color:var(--muted);">سقف يومي عام (كل المنصة) — توكنز
+              <input type="number" id="cfg-globalDailyMaxOutTok" class="admin-input" style="width:100%;margin-top:.2rem;">
+            </label>
+            <label style="font-size:.75rem;color:var(--muted);">سقف يومي عام (كل المنصة) — credits
+              <input type="number" id="cfg-globalDailyMaxTtsCredits" class="admin-input" style="width:100%;margin-top:.2rem;">
+            </label>
+          </div>
+          <div style="display:flex;gap:.6rem;flex-wrap:wrap;">
+            <button class="btn-primary" style="font-size:.8rem;padding:.5rem 1rem;" onclick="saveAiConfig()">💾 حفظ السقوف</button>
+            <button id="breaker-reset-btn" style="font-size:.8rem;padding:.5rem 1rem;border:1.5px solid #c0392b;color:#c0392b;border-radius:8px;background:#fff;display:none;" onclick="resetEmergencyStop()">🔓 إعادة تفعيل الميزة الآن</button>
+          </div>
+        </div>
+      </div>
       <div class="admin-form-card">
         <h3 style="margin-bottom:.5rem;">📊 تحليل استهلاك ممتحنة AI (Anthropic + Groq Whisper + ElevenLabs)</h3>
         <p style="font-size:.78rem;color:var(--muted);margin-bottom:1rem;line-height:1.5;">يعرض من أين وكيف يُستهلك الرصيد: عدد الحروف الفعلية المرسلة لـ ElevenLabs، توكنز Anthropic، وأي رد "قُطع" لأنه طويل جداً — مقسّم حسب الكود.</p>
@@ -2579,6 +2576,77 @@ applyHv3AdminData();</script>
     </div>
     <!-- ===== END USAGE ADMIN PANEL ===== -->
 </div>
+<script>
+window._aiCfgCache = null;
+
+function loadAiBreakerConfig() {
+  var adminPass = _adminPassStore ? _adminPassStore.get() : null;
+  var statusEl = document.getElementById('breaker-status');
+  var fieldsEl = document.getElementById('breaker-fields');
+  if (!adminPass || !statusEl) return;
+
+  fetch(WORKER_URL + '/api/ai-config', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ adminPassword: adminPass })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(res) {
+    if (!res || !res.ok) { statusEl.innerHTML = '❌ تعذّر تحميل إعدادات الحماية.'; return; }
+    window._aiCfgCache = res.config;
+    var c = res.config;
+    var resetBtn = document.getElementById('breaker-reset-btn');
+    if (c.emergencyStop) {
+      statusEl.innerHTML = '🔴 <strong>الميزة متوقفة حالياً تلقائياً</strong> — السبب: ' + escUsageHtml(c.emergencyStopReason || 'غير معروف') +
+        (c.emergencyStopAt ? ' — منذ ' + new Date(c.emergencyStopAt).toLocaleString('ar-TN') : '');
+      if (resetBtn) resetBtn.style.display = 'inline-block';
+    } else {
+      statusEl.innerHTML = '🟢 الحماية تعمل بشكل طبيعي — الميزة مفعّلة.' +
+        (res.todayGlobalUsage ? ' استهلاك اليوم: ' + (res.todayGlobalUsage.outTok||0).toLocaleString() + ' توكن، ~' + (res.todayGlobalUsage.ttsCredits||0).toLocaleString() + ' credit.' : '');
+      if (resetBtn) resetBtn.style.display = 'none';
+    }
+    document.getElementById('cfg-perCodeDailyMaxOutTok').value = c.perCodeDailyMaxOutTok;
+    document.getElementById('cfg-perCodeDailyMaxTtsCredits').value = c.perCodeDailyMaxTtsCredits;
+    document.getElementById('cfg-globalDailyMaxOutTok').value = c.globalDailyMaxOutTok;
+    document.getElementById('cfg-globalDailyMaxTtsCredits').value = c.globalDailyMaxTtsCredits;
+    fieldsEl.style.display = 'block';
+  })
+  .catch(function(e) { statusEl.innerHTML = '❌ خطأ: ' + escUsageHtml(e.message); });
+}
+
+function saveAiConfig() {
+  var adminPass = _adminPassStore ? _adminPassStore.get() : null;
+  if (!adminPass) return;
+  var update = {
+    perCodeDailyMaxOutTok: parseInt(document.getElementById('cfg-perCodeDailyMaxOutTok').value) || 0,
+    perCodeDailyMaxTtsCredits: parseInt(document.getElementById('cfg-perCodeDailyMaxTtsCredits').value) || 0,
+    globalDailyMaxOutTok: parseInt(document.getElementById('cfg-globalDailyMaxOutTok').value) || 0,
+    globalDailyMaxTtsCredits: parseInt(document.getElementById('cfg-globalDailyMaxTtsCredits').value) || 0
+  };
+  fetch(WORKER_URL + '/api/ai-config', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ adminPassword: adminPass, update: update })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function() { loadAiBreakerConfig(); })
+  .catch(function(e) { alert('فشل الحفظ: ' + e.message); });
+}
+
+function resetEmergencyStop() {
+  var adminPass = _adminPassStore ? _adminPassStore.get() : null;
+  if (!adminPass) return;
+  if (!confirm('متأكد إنك تحققت من سبب التوقف قبل ما تعاود تفعّل الميزة؟')) return;
+  fetch(WORKER_URL + '/api/ai-config', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ adminPassword: adminPass, update: { emergencyStop: false } })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function() { loadAiBreakerConfig(); })
+  .catch(function(e) { alert('فشل: ' + e.message); });
+}
+</script>
 <div id="page-mundlich" class="page">
   <div class="cat-header">
     <div class="cat-header-inner">
@@ -3625,7 +3693,8 @@ async function _syncCodesIndex() {
           weeks: c.weeks || 1,
           active: c.active,
           type: c.type || 'single',
-          created_at: c.created_at
+          created_at: c.created_at,
+          ai_sessions: c.ai_sessions || 0
         })
       }).catch(function(e) {
         console.warn('codes_index sync failed for code:', c.code, e);
@@ -4086,6 +4155,8 @@ async function checkGate() {
     window.__sessionExpiry = expires; // حفظ تاريخ الانتهاء في الذاكرة فقط
     _sessionToken = verifyData.token; // حفظ الـ token في الذاكرة فقط (لا localStorage)
     // ✅ حصة جلسات الممتحنة AI (مشتركة لكل من يستعمل هذا الكود) — يرجعها /api/verify-code
+    window._aiSessionsTotal = verifyData.ai_sessions_total || 0;
+    window._aiSessionsUsed = verifyData.ai_sessions_used || 0;
     if (typeof window.aiUpdateQuotaDisplay === 'function') window.aiUpdateQuotaDisplay();
     _ENC.setUserCode(val).catch(function(e){ console.warn('ENC key setup failed:', e); });
     // حفظ نوع الكود في الذاكرة فقط
@@ -5165,18 +5236,21 @@ function setCodeType(t) {
 function addCode() {
   const input = document.getElementById('new-code-input');
   const weeksInput = document.getElementById('days-input');
+  const aiInput = document.getElementById('ai-sessions-input');
   const weeks = Math.max(2, Math.min(365, parseInt(weeksInput.value) || 2));
+  const aiSessions = Math.max(3, Math.min(999, parseInt(aiInput.value) || 3));
   const val = (input.value.trim() || generateCode()).toUpperCase();
   if (codes.find(c => c.code === val)) { showToast('⚠ Code existiert bereits'); return; }
-  // ✅ ميزة الممتحنة AI متاحة بلا حدود لكل الأكواد تلقائياً — لا يوجد أي عدّ للجلسات
-  codes.unshift({ id: Date.now().toString(), code: val, active: true, use_count: 0, created_at: new Date().toISOString(), weeks, type: _newCodeType });
+  codes.unshift({ id: Date.now().toString(), code: val, active: true, use_count: 0, created_at: new Date().toISOString(), weeks, type: _newCodeType, ai_sessions: aiSessions });
   saveCodes();
   input.value = '';
   weeksInput.value = 2;
+  aiInput.value = 0;
   updateValidityNote();
   const weeksLabel = weeks === 1 ? 'يوم واحد' : weeks + ' أيام';
   const typeLabel = _newCodeType === 'single' ? '📱 هاتف واحد' : '👥 متعدد الأجهزة';
-  showToast('✓ Code ' + val + ' erstellt — ' + weeksLabel + ' — ' + typeLabel);
+  const aiLabel = aiSessions > 0 ? (' — 🎙️ ' + aiSessions + ' جلسة AI') : '';
+  showToast('✓ Code ' + val + ' erstellt — ' + weeksLabel + ' — ' + typeLabel + aiLabel);
 }
 function updateValidityNote() {
   const weeksInput = document.getElementById('days-input');
@@ -5227,7 +5301,7 @@ function switchTab(tab) {
   if (tab === 'notif') notifAdminLoad();
   if (tab === 'struktur') strukturAdminLoad();
   if (tab === 'afkar') afkarAdminLoad();
-  if (tab === 'usage') loadAiUsageReport();
+  if (tab === 'usage') { loadAiUsageReport(); loadAiBreakerConfig(); }
   if (tab === 'exams') renderExamList();
   if (tab === 'names') {
     Promise.all([
@@ -11728,8 +11802,6 @@ async function afkarMoveGroup(id, direction) {
   // ── حالة الجلسة (State Machine) — Teil 1 ────────────────────────
   // المراحل: greeting → presentation → q1 → q2 → closing → done
   var _t1Stage = 'greeting';
-  var _t1StayCount = 0; // ✅ عدد مرات بقاء الذكاء الاصطناعي على نفس السؤال لأن الطالب لم يجب فعلياً
-  var T1_MAX_STAY = 2; // ✅ حد أقصى قبل الانتقال الجبري لمنع التعليق اللا نهائي
 
   // البنية الثابتة لـ Teil 1 — لا تتغير أبداً مهما طالت المحادثة
   var T1_BASE_PROMPT =
@@ -11751,11 +11823,7 @@ async function afkarMoveGroup(id, direction) {
     '- Jede deine Antwort (außer der Begrüßung) endet mit einer Zeile "💡 Feedback:" auf Arabisch — 1 kurzer, konkreter Satz zu einem Grammatik- oder Wortschatzpunkt aus der letzten Antwort des Kandidaten.\n' +
     '- Antworte IMMER auf Deutsch (B2-Niveau, klar und natürlich). Falls der Kandidat auf Arabisch antwortet, bitte ihn höflich auf Deutsch fortzufahren — das zählt nicht als eine der 2 Fragen.\n' +
     '- Sei unterstützend und ermutigend, wie eine echte, freundliche Prüferin.\n' +
-    '- ABSOLUT VERBOTEN: Schreibe NIEMALS Regieanweisungen, Szenarien, Klammern wie "(Warte auf...)", "Nach der Präsentation:" oder ähnliches. Antworte IMMER nur mit dem, was du JETZT in diesem Moment sagst — nicht was du in der Zukunft sagen wirst.\n\n' +
-    'ANPASSUNG AN DEN KANDIDATEN (SEHR WICHTIG): Du bist KEIN starrer Frage-Automat. Lies die letzte Antwort des Kandidaten genau, bevor du reagierst:\n' +
-    '- Wenn der Kandidat WIRKLICH inhaltlich geantwortet hat (auch kurz, auch mit Fehlern, auch unsicher) → gehe normal zum nächsten Schritt über.\n' +
-    '- Wenn der Kandidat NICHT wirklich geantwortet/präsentiert hat — z.B. "Ich kann nicht", "Ich weiß nicht", er bittet um Hilfe, antwortet komplett irrelevant/leer, oder wirkt verwirrt/blockiert → gehe NICHT weiter. Reagiere stattdessen kurz ermutigend (z.B. "Kein Problem, ich helfe Ihnen."), gib einen kleinen konkreten Denkanstoß oder ein einfaches Beispiel auf Deutsch, und stelle DIESELBE Frage/Aufforderung nochmal in einfacheren, kürzeren Worten. Bleib beim selben Schritt — erfinde KEINE neue, andere Frage.\n' +
-    '- MARKER (GANZ WICHTIG, PFLICHT): Füge nach deiner gesamten Antwort (nach der "💡 Feedback:"-Zeile, falls vorhanden) in einer eigenen, neuen Zeile GENAU einen der folgenden zwei Marker hinzu — er ist für den Kandidaten unsichtbar und wird automatisch entfernt: "[[ADVANCE]]" falls du zum nächsten Schritt übergegangen bist, ODER "[[STAY]]" falls du beim selben Schritt geblieben bist, weil der Kandidat nicht wirklich geantwortet hat.';
+    '- ABSOLUT VERBOTEN: Schreibe NIEMALS Regieanweisungen, Szenarien, Klammern wie "(Warte auf...)", "Nach der Präsentation:" oder ähnliches. Antworte IMMER nur mit dem, was du JETZT in diesem Moment sagst — nicht was du in der Zukunft sagen wirst.';
 
   // يولّد تعليمات إضافية تحدد "أين نحن الآن بالضبط" — تُضاف فوق البرومبت الأساسي
   function t1StageInstruction(stage) {
@@ -11763,19 +11831,13 @@ async function afkarMoveGroup(id, direction) {
       case 'greeting':
         return 'AKTUELLE PHASE: Begrüßung. Sage GENAU diesen Text und nichts anderes: "Hallo und herzlich willkommen! Heute werden Sie ein Thema präsentieren, das Sie interessiert. Sie können zum Beispiel über ein Buch, einen Film, eine Reise oder eine wichtige Person sprechen.\nJetzt sind Sie dran: Welches Thema möchten Sie präsentieren, und warum?" — Verwende KEINESFALLS das Wort "Frage" in diesem Text (es ist noch keine der 2 offiziellen Fragen, nur eine Aufforderung zur Präsentation). Füge KEINE "💡 Feedback:"-Zeile hinzu.';
       case 'presentation':
-        return 'AKTUELLE PHASE: Der Kandidat sollte gerade sein Thema präsentiert haben (0 von 2 Fragen bisher gestellt). Prüfe: Hat er wirklich präsentiert (auch kurz/fehlerhaft), oder nicht wirklich (z.B. "Ich kann nicht", "Ich weiß nicht", bittet um Hilfe, irrelevant/leer)? ' +
-          'FALL A — er hat präsentiert: Stelle JETZT SOFORT FRAGE 1 (die allererste der genau 2 offiziellen Fragen) zu einem Aspekt der Präsentation — OHNE jede Einleitung. Beginne deine Antwort NICHT mit "Vielen Dank", "Das ist ein schönes/persönliches Thema", "Ich möchte mehr erfahren" oder Ähnlichem — das erste Wort deiner Antwort muss bereits Teil der Frage selbst sein. Marker: [[ADVANCE]]. ' +
-          'FALL B — er hat NICHT wirklich präsentiert: Ermutige ihn kurz, gib ein einfaches Beispielthema oder einen kleinen Denkanstoß, und bitte ihn nochmal einfacher, sein Thema kurz vorzustellen. Marker: [[STAY]].';
+        return 'AKTUELLE PHASE: Der Kandidat hat gerade sein Thema präsentiert. Das war NOCH KEINE der 2 offiziellen Fragen — du hast bisher 0 von 2 Fragen gestellt. Stelle JETZT SOFORT FRAGE 1 (die allererste der genau 2 offiziellen Fragen) zu einem Aspekt der Präsentation — OHNE jede Einleitung. Beginne deine Antwort NICHT mit "Vielen Dank", "Das ist ein schönes/persönliches Thema", "Ich möchte mehr erfahren" oder Ähnlichem — das erste Wort deiner Antwort muss bereits Teil der Frage selbst sein.';
       case 'q1':
-        return 'AKTUELLE PHASE: Der Kandidat sollte soeben FRAGE 1 beantwortet haben (1 von 2 Fragen bisher gestellt). Hat er das wirklich getan? ' +
-          'FALL A — ja: Du MUSST jetzt noch FRAGE 2 stellen (die zweite und letzte Frage, ein anderer Aspekt des Themas) — schließe die Sitzung auf KEINEN FALL jetzt schon ab. Marker: [[ADVANCE]]. ' +
-          'FALL B — er hat NICHT wirklich geantwortet (z.B. "weiß nicht", "kann nicht", bittet um Hilfe): Ermutige ihn kurz, gib ein einfaches Beispiel, und stelle dieselbe FRAGE 1 nochmal in einfacheren Worten — gehe NICHT zu Frage 2 über. Marker: [[STAY]].';
+        return 'AKTUELLE PHASE: Der Kandidat hat soeben FRAGE 1 beantwortet (du hast jetzt 1 von 2 Fragen gestellt). Du MUSST jetzt noch FRAGE 2 stellen (die zweite und letzte Frage, ein anderer Aspekt des Themas) — schließe die Sitzung auf KEINEN FALL jetzt schon ab.';
       case 'q2':
-        return 'AKTUELLE PHASE: Der Kandidat sollte soeben FRAGE 2 beantwortet haben (2 von 2 Fragen). Hat er das wirklich getan? ' +
-          'FALL A — ja: ABSCHLUSS. Deine Antwort MUSS NUR aus einem kurzen Dank + der Aussage bestehen, dass Teil 1 hiermit beendet ist. ABSOLUT VERBOTEN: KEIN Fragezeichen "?" irgendwo in deiner Antwort (außer eventuell in der Feedback-Zeile), KEINE dritte Frage, KEINE Aufforderung zur Vertiefung. Füge trotzdem eine "💡 Feedback:"-Zeile hinzu. Marker: [[ADVANCE]]. ' +
-          'FALL B — er hat NICHT wirklich geantwortet: Schließe NOCH NICHT ab. Ermutige ihn kurz, gib ein einfaches Beispiel, und stelle dieselbe FRAGE 2 nochmal in einfacheren Worten. Marker: [[STAY]].';
+        return 'AKTUELLE PHASE: ABSCHLUSS. Der Kandidat hat soeben FRAGE 2 beantwortet (2 von 2 Fragen — fertig). Deine Antwort MUSS NUR aus einem kurzen Dank + der Aussage bestehen, dass Teil 1 hiermit beendet ist. ABSOLUT VERBOTEN: KEIN Fragezeichen "?" irgendwo in deiner Antwort (außer eventuell in der Feedback-Zeile), KEINE dritte Frage, KEINE Aufforderung zur Vertiefung. Füge trotzdem eine "💡 Feedback:"-Zeile hinzu.';
       default:
-        return 'AKTUELLE PHASE: Die Sitzung ist beendet. Antworte nur kurz und höflich, ohne neue Fragen. Marker: [[ADVANCE]].';
+        return 'AKTUELLE PHASE: Die Sitzung ist beendet. Antworte nur kurz und höflich, ohne neue Fragen.';
     }
   }
 
@@ -11786,15 +11848,12 @@ async function afkarMoveGroup(id, direction) {
     return t1StageInstruction(stage) + '\n\n' + T1_BASE_PROMPT +
       '\n\nERINNERUNG (SEHR WICHTIG): Die "AKTUELLE PHASE"-Anweisung ganz oben hat IMMER Vorrang vor der allgemeinen ABLAUF-Beschreibung. ' +
       'Wiederhole NIEMALS die Begrüßung oder die ursprüngliche Aufforderung ("Welches Thema möchten Sie präsentieren...") erneut, wenn die aktuelle Phase nicht "greeting" ist — das wäre ein Fehler. ' +
-      'Schau IMMER auf die letzte Nachricht des Kandidaten (role: user) und beziehe dich in deiner Frage/Ermutigung konkret auf einen Punkt daraus. ' +
-      'Vergiss NIEMALS den Marker "[[ADVANCE]]" oder "[[STAY]]" am Ende deiner Antwort (siehe FALL A / FALL B oben) — er ist Pflicht in jeder Antwort außer der Begrüßung.';
+      'Schau IMMER auf die letzte Nachricht des Kandidaten (role: user) und beziehe dich in deiner Frage konkret auf einen Punkt daraus.';
   }
 
   // ── حالة الجلسة (State Machine) — Teil 2 ────────────────────────
   // المراحل: greeting → inhalt → meinung → erfahrung → vorteilnachteil → closing → done
   var _t2Stage = 'greeting';
-  var _t2StayCount = 0; // ✅ عدد مرات بقاء الذكاء الاصطناعي على نفس السؤال لأن الطالب لم يجب فعلياً
-  var T2_MAX_STAY = 2; // ✅ حد أقصى قبل الانتقال الجبري لمنع التعليق اللا نهائي
   var _t2Topic = null; // الموضوع الحقيقي المختار من بنك اختبارات Teil 2
   var _t2TopicIdx = null; // فهرس الموضوع في البنك — يُستخدم لحفظ/عرض نتيجة هذا الاختبار تحديداً
 
@@ -11860,11 +11919,7 @@ async function afkarMoveGroup(id, direction) {
       '- Jede deine Antwort (außer der Begrüßung) endet mit einer Zeile "💡 Feedback:" auf Arabisch — 1 kurzer, konkreter Satz zu einem Grammatik- oder Wortschatzpunkt aus der letzten Antwort des Kandidaten.\n' +
       '- Antworte IMMER auf Deutsch (B2-Niveau, klar und natürlich). Falls der Kandidat auf Arabisch antwortet, bitte ihn höflich auf Deutsch fortzufahren — das zählt nicht als eine der 4 Fragen.\n' +
       '- Sei unterstützend und ermutigend, wie eine echte, freundliche Prüferin.\n' +
-      '- ABSOLUT VERBOTEN: Schreibe NIEMALS Regieanweisungen, Szenarien oder Klammern wie "(Warte auf...)". Antworte NUR mit dem, was du JETZT sagst.\n\n' +
-      'ANPASSUNG AN DEN KANDIDATEN (SEHR WICHTIG): Du bist KEIN starrer Frage-Automat. Lies die letzte Antwort des Kandidaten genau, bevor du reagierst:\n' +
-      '- Wenn der Kandidat WIRKLICH inhaltlich geantwortet hat (auch kurz, auch mit Fehlern, auch unsicher) → gehe normal zur nächsten Frage über.\n' +
-      '- Wenn der Kandidat NICHT wirklich geantwortet hat — z.B. "Ich kann nicht", "Ich weiß nicht", er bittet um Hilfe, antwortet komplett irrelevant/leer, oder wirkt verwirrt/blockiert → gehe NICHT zur nächsten Frage über. Reagiere stattdessen kurz ermutigend (z.B. "Kein Problem, ich helfe Ihnen."), gib einen kleinen konkreten Denkanstoß oder ein einfaches Beispiel auf Deutsch, und stelle DIESELBE Frage nochmal in einfacheren, kürzeren Worten. Bleib beim selben Punkt (Inhalt/Meinung/Erfahrung/Vorteil-Nachteil) — erfinde KEINE neue, andere Frage und wiederhole NICHT einfach wortwörtlich dieselbe Formulierung, die ihn schon blockiert hat.\n' +
-      '- MARKER (GANZ WICHTIG, PFLICHT): Füge nach deiner gesamten Antwort (nach der "💡 Feedback:"-Zeile, falls vorhanden) in einer eigenen, neuen Zeile GENAU einen der folgenden zwei Marker hinzu — er ist für den Kandidaten unsichtbar und wird automatisch entfernt: "[[ADVANCE]]" falls du zur nächsten Frage übergegangen bist, ODER "[[STAY]]" falls du bei derselben Frage geblieben bist, weil der Kandidat nicht wirklich geantwortet hat.'
+      '- ABSOLUT VERBOTEN: Schreibe NIEMALS Regieanweisungen, Szenarien oder Klammern wie "(Warte auf...)". Antworte NUR mit dem, was du JETZT sagst.'
     );
   }
 
@@ -11874,19 +11929,15 @@ async function afkarMoveGroup(id, direction) {
       case 'greeting':
         return 'AKTUELLE PHASE: Begrüßung. Sage GENAU diesen Text und nichts anderes: "Hallo! Ich bin Frau Müller, Ihre Prüferin. Können Sie den Inhalt des Textes zusammenfassen?" — Füge KEINE "💡 Feedback:"-Zeile hinzu.';
       case 'inhalt':
-        return 'AKTUELLE PHASE: Der Kandidat sollte soeben den INHALT zusammenfassen. Prüfe zuerst: Hat er das WIRKLICH getan (auch kurz/fehlerhaft), oder hat er nicht wirklich geantwortet (z.B. "Ich kann nicht", "Ich weiß nicht", bittet um Hilfe, irrelevant/leer)? ' +
-          'FALL A — er hat inhaltlich geantwortet: Stelle SOFORT FRAGE 2 (die Meinungsfrage) — OHNE jede Einleitung. Beginne NICHT mit "Vielen Dank", "Das ist interessant" oder Ähnlichem — das erste Wort muss bereits Teil der Frage sein. Marker: [[ADVANCE]]. ' +
-          'FALL B — er hat NICHT wirklich geantwortet: Reagiere kurz ermutigend, gib einen kleinen Hinweis worum es im Text geht (ohne die Zusammenfassung für ihn zu machen), und bitte ihn nochmal in einfacheren Worten, kurz zu sagen worum es im Text geht. Marker: [[STAY]].';
+        return 'AKTUELLE PHASE: Der Kandidat hat soeben den INHALT zusammengefasst. Stelle JETZT SOFORT FRAGE 2 (die Meinungsfrage) — OHNE jede Einleitung. Beginne NICHT mit "Vielen Dank", "Das ist interessant" oder Ähnlichem — das erste Wort muss bereits Teil der Frage sein.';
       case 'meinung':
-        return 'AKTUELLE PHASE: Der Kandidat sollte soeben seine MEINUNG äußern. Hat er das wirklich getan? Falls ja: Stelle jetzt FRAGE 3 (die Erfahrungsfrage). Marker: [[ADVANCE]]. Falls er nicht wirklich geantwortet hat (z.B. "weiß nicht", "kann nicht", bittet um Hilfe): ermutige ihn kurz, gib ein einfaches Beispiel für eine mögliche Meinung, und stelle dieselbe Meinungsfrage nochmal einfacher. Marker: [[STAY]].';
+        return 'AKTUELLE PHASE: Der Kandidat hat soeben seine MEINUNG geäußert. Stelle jetzt FRAGE 3 (die Erfahrungsfrage).';
       case 'erfahrung':
-        return 'AKTUELLE PHASE: Der Kandidat sollte soeben von seiner ERFAHRUNG erzählen. Hat er das wirklich getan? Falls ja: Stelle jetzt FRAGE 4 (Vorteil ODER Nachteil — wähle genau einen Aspekt). Marker: [[ADVANCE]]. Falls er nicht wirklich geantwortet hat: ermutige ihn kurz (z.B. dass auch eine kleine, alltägliche Erfahrung reicht), gib ein kurzes Beispiel, und stelle dieselbe Erfahrungsfrage nochmal einfacher. Marker: [[STAY]].';
+        return 'AKTUELLE PHASE: Der Kandidat hat soeben von seiner ERFAHRUNG erzählt. Stelle jetzt FRAGE 4 (Vorteil ODER Nachteil — wähle genau einen Aspekt).';
       case 'vorteilnachteil':
-        return 'AKTUELLE PHASE: Der Kandidat sollte soeben FRAGE 4 (Vorteil/Nachteil) beantwortet haben. Hat er das wirklich getan? ' +
-          'FALL A — er hat inhaltlich geantwortet: Das war die letzte Frage — ABSCHLUSS. Deine Antwort MUSS NUR aus einem kurzen Dank + der Aussage bestehen, dass Teil 2 hiermit beendet ist. ABSOLUT VERBOTEN: KEIN Fragezeichen "?" irgendwo in deiner Antwort (außer eventuell in der Feedback-Zeile), KEINE fünfte Frage, KEINE Aufforderung zur Vertiefung. Füge trotzdem eine "💡 Feedback:"-Zeile hinzu. Marker: [[ADVANCE]]. ' +
-          'FALL B — er hat NICHT wirklich geantwortet: Schließe NOCH NICHT ab. Ermutige ihn kurz, gib ein einfaches Beispiel für einen Vorteil/Nachteil, und stelle dieselbe Frage nochmal einfacher. Marker: [[STAY]].';
+        return 'AKTUELLE PHASE: ABSCHLUSS. Der Kandidat hat soeben FRAGE 4 beantwortet — das war die letzte Frage. Deine Antwort MUSS NUR aus einem kurzen Dank + der Aussage bestehen, dass Teil 2 hiermit beendet ist. ABSOLUT VERBOTEN: KEIN Fragezeichen "?" irgendwo in deiner Antwort (außer eventuell in der Feedback-Zeile), KEINE fünfte Frage, KEINE Aufforderung zur Vertiefung. Füge trotzdem eine "💡 Feedback:"-Zeile hinzu.';
       default:
-        return 'AKTUELLE PHASE: Die Sitzung ist beendet. Antworte nur kurz und höflich, ohne neue Fragen. Marker: [[ADVANCE]].';
+        return 'AKTUELLE PHASE: Die Sitzung ist beendet. Antworte nur kurz und höflich, ohne neue Fragen.';
     }
   }
 
@@ -11896,8 +11947,7 @@ async function afkarMoveGroup(id, direction) {
     return t2StageInstruction(stage) + '\n\n' + t2BuildBasePrompt(_t2Topic) +
       '\n\nERINNERUNG (SEHR WICHTIG): Die "AKTUELLE PHASE"-Anweisung ganz oben hat IMMER Vorrang. ' +
       'Wiederhole NIEMALS die Begrüßung ("Hallo! Ich bin Frau Müller...") erneut, wenn die aktuelle Phase nicht "greeting" ist. ' +
-      'Beziehe dich in deiner Frage/Ermutigung IMMER konkret auf die letzte Antwort des Kandidaten (role: user). ' +
-      'Vergiss NIEMALS den Marker "[[ADVANCE]]" oder "[[STAY]]" am Ende deiner Antwort (siehe FALL A / FALL B oben) — er ist Pflicht in jeder Antwort außer der Begrüßung.';
+      'Beziehe dich in deiner Frage IMMER konkret auf die letzte Antwort des Kandidaten (role: user).';
   }
 
   // ينقل حالة Teil 2 للمرحلة التالية بعد كل رد من الطالب
@@ -12055,12 +12105,11 @@ async function afkarMoveGroup(id, direction) {
 
   // ── Begin session (triggered by start button) ──────────────────
   window.aiBeginSession = function() {
-    // ✅ لا يوجد أي حد لعدد الجلسات — كل الأكواد حرة في فتح جلسات مع الممتحنة AI
-    // ما زلنا نمرّ عبر الـ Worker لفتح "الجلسة النشطة" (حاجز أمان ضد الاستدعاء المباشر لـ endpoints)
+    // ✅ تحقّق من حصة جلسات AI واستهلك جلسة واحدة عبر الـ Worker قبل البدء الفعلي
     var startBtn = document.getElementById('ai-start-btn');
     var quotaNote = document.getElementById('ai-quota-note');
     if (startBtn) startBtn.disabled = true;
-    if (quotaNote) { quotaNote.textContent = 'جارٍ تجهيز الجلسة...'; quotaNote.style.color = ''; }
+    if (quotaNote) { quotaNote.textContent = 'جارٍ التحقق من الجلسات المتاحة...'; quotaNote.style.color = ''; }
     var code = (window.__getActiveCode ? window.__getActiveCode() : null);
     var token = (window.__getToken ? window.__getToken() : null) || '';
     fetch(WORKER_URL + '/api/ai-session/consume', {
@@ -12076,17 +12125,14 @@ async function afkarMoveGroup(id, direction) {
     .then(function(res) {
       if (startBtn) startBtn.disabled = false;
       if (res.body && res.body.ok) {
-        if (typeof res.body.remainingToday === 'number') window._aiRemainingToday = res.body.remainingToday;
+        if (typeof res.body.total === 'number') window._aiSessionsTotal = res.body.total;
+        if (typeof res.body.remaining === 'number') window._aiSessionsUsed = (window._aiSessionsTotal || 0) - res.body.remaining;
         _aiActuallyBeginSession();
       } else {
         var errType = res.body && res.body.error;
-        var msg;
-        if (errType === 'daily_limit_reached') {
-          var lim = (res.body && res.body.limit) || '';
-          msg = '🔒 لقد وصلت للحد الأقصى لعدد جلسات اليوم (' + lim + ' جلسات). حاول مرة أخرى غدًا.';
-        } else {
-          msg = '⚠ تعذّر بدء الجلسة، تحقق من اتصالك وحاول مرة أخرى.';
-        }
+        var msg = (errType === 'quota_exceeded')
+          ? '🔒 لقد استهلكت جميع جلسات الممتحنة AI المتاحة لكودك. تواصل مع الإدارة لتفعيل جلسات إضافية.'
+          : '⚠ تعذّر بدء الجلسة، تحقق من اتصالك وحاول مرة أخرى.';
         if (quotaNote) { quotaNote.textContent = msg; quotaNote.style.color = '#c0392b'; }
         if (typeof showToast === 'function') showToast(msg);
       }
@@ -12128,9 +12174,7 @@ async function afkarMoveGroup(id, direction) {
     _sessionStarted = false;
     _sessionEnded = false;
     _t1Stage = 'greeting';
-    _t1StayCount = 0;
     _t2Stage = 'greeting';
-    _t2StayCount = 0;
     _t2Topic = null;
     _t2TopicIdx = null;
     _t3Topic = null;
@@ -12248,20 +12292,30 @@ async function afkarMoveGroup(id, direction) {
     if (startScreen) startScreen.style.display = 'flex';
   };
 
-  // ── عرض حالة الجلسة على شاشة البداية (بلا حد كلي، فقط حد يومي بسيط) ──
+  // ── عرض عدد جلسات AI المتبقية على شاشة البداية ──────────────────
   function aiUpdateQuotaDisplay() {
     var note = document.getElementById('ai-quota-note');
     var startBtn = document.getElementById('ai-start-btn');
     var mini = document.getElementById('ai-quota-mini');
+    var total = window._aiSessionsTotal || 0;
+    var used = window._aiSessionsUsed || 0;
+    var remaining = Math.max(0, total - used);
     if (note) {
-      if (typeof window._aiRemainingToday === 'number') {
-        note.textContent = '🎙️ ' + window._aiRemainingToday + ' جلسة متبقية اليوم مع الممتحنة AI';
+      if (total <= 0) {
+        note.textContent = '🔒 ميزة الممتحنة AI غير مفعّلة لكودك. تواصل مع الإدارة لتفعيلها.';
+        note.style.color = '#c0392b';
+        if (startBtn) startBtn.disabled = true;
+      } else if (remaining <= 0) {
+        note.textContent = '🔒 لقد استهلكت كل جلساتك (' + used + '/' + total + '). تواصل مع الإدارة لتفعيل جلسات إضافية.';
+        note.style.color = '#c0392b';
+        if (startBtn) startBtn.disabled = true;
       } else {
-        note.textContent = '🎙️ ابدأ جلستك مع الممتحنة AI';
+        note.textContent = '🎙️ لديك ' + remaining + ' من ' + total + ' جلسة متبقية مع الممتحنة AI';
+        note.style.color = '';
+        if (startBtn) startBtn.disabled = false;
       }
-      note.style.color = '';
     }
-    if (startBtn) startBtn.disabled = false;
+    // ✅ بادج صغير في صفحة Mündlich نفسها — يظهر قبل دخول الطالب لصفحة AI
     if (mini) {
       mini.innerHTML = '';
     }
@@ -12353,18 +12407,6 @@ async function afkarMoveGroup(id, direction) {
     return feedbackMatch ? (closing + '\n' + feedbackMatch[0]) : closing;
   }
 
-  // ── T1/T2: يقرأ ماركر [[ADVANCE]] / [[STAY]] من رد الموديل ويشيله من النص المعروض/المنطوق ──
-  // يرجّع { text, advance } — advance = true افتراضياً لو الماركر غايب (حماية من التعليق)
-  function aiParseAdvanceMarker(reply) {
-    var advance = true;
-    var m = reply.match(/\[\[\s*(ADVANCE|STAY)\s*\]\]/i);
-    if (m) {
-      advance = m[1].toUpperCase() === 'ADVANCE';
-      reply = reply.replace(/\s*\[\[\s*(ADVANCE|STAY)\s*\]\]\s*/i, '').trim();
-    }
-    return { text: reply, advance: advance };
-  }
-
   function aiSubmitUserText(text) {
     if (_aiLoading || _sessionEnded) return;
     aiAppendMessage('user', text);
@@ -12403,46 +12445,25 @@ async function afkarMoveGroup(id, direction) {
         if (_t3TurnCount >= T3_MAX_TURNS) t3AgreementReached = true;
       }
 
-      // ✅ T1/T2: اقرأ ماركر [[ADVANCE]] / [[STAY]] — يحدد هل الطالب أجاب فعلياً أم لا.
-      // لو بقي "عالق" (STAY) عدة مرات متتالية على نفس السؤال، انتقل جبرياً للسؤال التالي
-      // لمنع محادثة معلّقة لا تتقدّم أبداً.
-      var t1Advance = true, t2Advance = true;
-      if (_aiTeil === 't1') {
-        var parsed1 = aiParseAdvanceMarker(reply);
-        reply = parsed1.text;
-        t1Advance = parsed1.advance;
-        if (!t1Advance && _t1StayCount >= T1_MAX_STAY) t1Advance = true; // ✅ سقف الأمان
-        _t1StayCount = t1Advance ? 0 : _t1StayCount + 1;
-      }
-      if (_aiTeil === 't2') {
-        var parsed2 = aiParseAdvanceMarker(reply);
-        reply = parsed2.text;
-        t2Advance = parsed2.advance;
-        if (!t2Advance && _t2StayCount >= T2_MAX_STAY) t2Advance = true; // ✅ سقف الأمان
-        _t2StayCount = t2Advance ? 0 : _t2StayCount + 1;
-      }
-      var isClosingNow = (_aiTeil === 't1' && wasLastStage && t1Advance) ||
-                          (_aiTeil === 't2' && wasLastStage && t2Advance);
-
       // ✅ حماية إضافية: شيل أي جملة شكر/مجاملة تمهيدية تجاهل الموديل منعها
-      // (لا تُطبَّق في مرحلة الختام الفعلية لأن الشكر هناك مطلوب فعلاً)
-      if ((_aiTeil === 't1' || _aiTeil === 't2') && !isClosingNow) {
+      // (لا تُطبَّق في مرحلة الختام لأن الشكر هناك مطلوب فعلاً)
+      if ((_aiTeil === 't1' || _aiTeil === 't2') && !wasLastStage) {
         reply = aiStripLeadingFiller(reply);
       }
 
-      // ✅ حماية إضافية أخرى: بمرحلة الختام الفعلية تحديداً، لو الموديل ضاف سؤال زيادة رغم المنع
+      // ✅ حماية إضافية أخرى: بمرحلة الختام تحديداً، لو الموديل ضاف سؤال زيادة رغم المنع
       // الصريح، افرض جملة إغلاق ثابتة بدلاً منه (مع الحفاظ على الفيدباك الأصلي)
-      if (isClosingNow) {
+      if (wasLastStage && (_aiTeil === 't1' || _aiTeil === 't2')) {
         reply = aiEnforceCleanClosing(reply, _aiTeil === 't1' ? 'Teil 1' : 'Teil 2');
       }
 
       aiAppendMessage('bot', reply);
       _aiHistory.push({ role: 'assistant', content: reply });
 
-      if (_aiTeil === 't1' && t1Advance) t1AdvanceStage();
-      if (_aiTeil === 't2' && t2Advance) t2AdvanceStage();
+      if (_aiTeil === 't1') t1AdvanceStage();
+      if (_aiTeil === 't2') t2AdvanceStage();
 
-      var isLastTurn = isClosingNow || t3AgreementReached;
+      var isLastTurn = wasLastStage || t3AgreementReached;
 
       if (isLastTurn) {
         // انتهت الجلسة — أغلق المايك فوراً قبل تشغيل الصوت لمنع أي تفاعل إضافي
@@ -13242,8 +13263,6 @@ function ygSearch() {
 <script>
 window._lv1IslahOpen = false;
 window._lv3IslahOpen = false;
-window._sb1IslahOpen = false;
-window._sb2IslahOpen = false;
 
 function _islahPosition(btn, panel) {
   var r  = btn.getBoundingClientRect();
@@ -13383,92 +13402,6 @@ function lv3ToggleIslah() {
     function _close(e) {
       if (!panel.contains(e.target) && e.target !== btn) {
         panel.style.display = 'none'; window._lv3IslahOpen = false;
-        btn.style.borderColor = 'var(--border)'; btn.style.color = 'var(--muted)'; btn.style.background = 'transparent';
-        document.removeEventListener('click', _close);
-        document.removeEventListener('touchstart', _close);
-      }
-    }
-    document.addEventListener('click', _close);
-    document.addEventListener('touchstart', _close);
-  }, 10);
-}
-
-function sb1ToggleIslah() {
-  var panel = document.getElementById('sb1-islah-panel');
-  var btn   = document.getElementById('sb1-islah-btn');
-  if (!panel || !btn) return;
-  if (window._sb1IslahOpen) {
-    panel.style.display = 'none';
-    window._sb1IslahOpen = false;
-    btn.style.borderColor = 'var(--border)'; btn.style.color = 'var(--muted)'; btn.style.background = 'transparent';
-    return;
-  }
-  var content = document.getElementById('sb1-islah-content');
-  if (content) {
-    if (!currentSbExam || !currentSbExam.gaps) {
-      content.innerHTML = '<div style="font-size:.8rem;color:var(--muted);text-align:center;padding:.4rem 0;">لا يوجد اختبار محمّل</div>';
-    } else {
-      content.innerHTML = currentSbExam.gaps.map(function(g) {
-        var label = 'فراغ ' + g.num;
-        var ans   = (g.correct || '?');
-        return '<div style="display:flex;align-items:center;justify-content:space-between;gap:.75rem;padding:.3rem .5rem;border-radius:7px;background:#faf7f2;border:1px solid #ede8dc;">' +
-          '<span style="font-size:.8rem;font-weight:600;color:var(--ink);">' + label + '</span>' +
-          '<span style="display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:24px;background:#43a047;color:white;font-family:\'DM Sans\',sans-serif;font-size:.76rem;font-weight:700;border-radius:6px;padding:0 .5rem;white-space:nowrap;max-width:130px;overflow:hidden;text-overflow:ellipsis;">' + escHtml(ans) + '</span>' +
-        '</div>';
-      }).join('');
-    }
-  }
-  panel.style.display = 'block';
-  _islahPosition(btn, panel);
-  window._sb1IslahOpen = true;
-  btn.style.borderColor = 'var(--accent)'; btn.style.color = 'var(--accent)'; btn.style.background = 'var(--accent-light)';
-  setTimeout(function() {
-    function _close(e) {
-      if (!panel.contains(e.target) && e.target !== btn) {
-        panel.style.display = 'none'; window._sb1IslahOpen = false;
-        btn.style.borderColor = 'var(--border)'; btn.style.color = 'var(--muted)'; btn.style.background = 'transparent';
-        document.removeEventListener('click', _close);
-        document.removeEventListener('touchstart', _close);
-      }
-    }
-    document.addEventListener('click', _close);
-    document.addEventListener('touchstart', _close);
-  }, 10);
-}
-
-function sb2ToggleIslah() {
-  var panel = document.getElementById('sb2-islah-panel');
-  var btn   = document.getElementById('sb2-islah-btn');
-  if (!panel || !btn) return;
-  if (window._sb2IslahOpen) {
-    panel.style.display = 'none';
-    window._sb2IslahOpen = false;
-    btn.style.borderColor = 'var(--border)'; btn.style.color = 'var(--muted)'; btn.style.background = 'transparent';
-    return;
-  }
-  var content = document.getElementById('sb2-islah-content');
-  if (content) {
-    if (!currentSbExam || !currentSbExam.gaps) {
-      content.innerHTML = '<div style="font-size:.8rem;color:var(--muted);text-align:center;padding:.4rem 0;">لا يوجد اختبار محمّل</div>';
-    } else {
-      content.innerHTML = currentSbExam.gaps.map(function(g) {
-        var label = 'فراغ ' + g.num;
-        var ans   = (g.correct || '?');
-        return '<div style="display:flex;align-items:center;justify-content:space-between;gap:.75rem;padding:.3rem .5rem;border-radius:7px;background:#faf7f2;border:1px solid #ede8dc;">' +
-          '<span style="font-size:.8rem;font-weight:600;color:var(--ink);">' + label + '</span>' +
-          '<span style="display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:24px;background:#43a047;color:white;font-family:\'DM Sans\',sans-serif;font-size:.76rem;font-weight:700;border-radius:6px;padding:0 .5rem;white-space:nowrap;max-width:130px;overflow:hidden;text-overflow:ellipsis;">' + escHtml(ans) + '</span>' +
-        '</div>';
-      }).join('');
-    }
-  }
-  panel.style.display = 'block';
-  _islahPosition(btn, panel);
-  window._sb2IslahOpen = true;
-  btn.style.borderColor = 'var(--accent)'; btn.style.color = 'var(--accent)'; btn.style.background = 'var(--accent-light)';
-  setTimeout(function() {
-    function _close(e) {
-      if (!panel.contains(e.target) && e.target !== btn) {
-        panel.style.display = 'none'; window._sb2IslahOpen = false;
         btn.style.borderColor = 'var(--border)'; btn.style.color = 'var(--muted)'; btn.style.background = 'transparent';
         document.removeEventListener('click', _close);
         document.removeEventListener('touchstart', _close);
