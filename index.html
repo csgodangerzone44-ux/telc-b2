@@ -1281,7 +1281,14 @@ function buildHv2Card(exam) {
     var _kw2 = (exam.keywords && exam.keywords[i-1]) ? exam.keywords[i-1] : '';
     var _r2 = _kw2 ? { html: highlightKeywords(exam.sentences[i-1]||'', _kw2), found: false } : highlightTitleInSentence(exam.sentences[i-1]||'', exam.title||'', hv2TitleHighlighted);
     if (_r2.found) hv2TitleHighlighted = true;
-    html += '<td style="font-size:.8rem;line-height:1.4;word-wrap:break-word;padding:.45rem .4rem;">' + i + '. ' + _r2.html + '</td>';
+    var _sentId2 = 'hv2-sent-' + exam.id + '-' + i;
+    html += '<td style="font-size:.8rem;line-height:1.4;word-wrap:break-word;padding:.45rem 1.6rem .45rem .4rem;position:relative;">'
+      + '<span id="' + _sentId2 + '">' + i + '. ' + _r2.html + '</span>'
+      + '<button onclick="hvTranslate(this,\'' + _sentId2 + '\')" style="position:absolute;top:.4rem;right:.15rem;display:inline-flex;align-items:center;justify-content:center;background:none;border:none;cursor:pointer;padding:.1rem;opacity:.4;" title="ترجمة">'
+      + '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20"/></svg>'
+      + '</button>'
+      + '<div id="' + _sentId2 + '-tr" style="display:none;direction:rtl;text-align:right;font-size:.76rem;color:#7a4020;background:#f0ddd2;border-radius:5px;padding:.2rem .45rem;margin-top:.2rem;line-height:1.6;"></div>'
+      + '</td>';
     html += '</tr>';
   }
   html += '</tbody></table>';
@@ -1366,7 +1373,14 @@ function buildHv3Card(exam) {
     var _kw3 = (exam.keywords && exam.keywords[i-1]) ? exam.keywords[i-1] : '';
     var _r3 = _kw3 ? { html: highlightKeywords(exam.sentences[i-1]||'', _kw3), found: false } : highlightTitleInSentence(exam.sentences[i-1]||'', exam.title||'', hv3TitleHighlighted);
     if (_r3.found) hv3TitleHighlighted = true;
-    html += '<td>' + i + '. ' + _r3.html + '</td>';
+    var _sentId3 = 'hv3-sent-' + exam.id + '-' + i;
+    html += '<td style="position:relative;padding-right:1.6rem;">'
+      + '<span id="' + _sentId3 + '">' + i + '. ' + _r3.html + '</span>'
+      + '<button onclick="hvTranslate(this,\'' + _sentId3 + '\')" style="position:absolute;top:.5rem;right:.15rem;display:inline-flex;align-items:center;justify-content:center;background:none;border:none;cursor:pointer;padding:.1rem;opacity:.4;" title="ترجمة">'
+      + '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20"/></svg>'
+      + '</button>'
+      + '<div id="' + _sentId3 + '-tr" style="display:none;direction:rtl;text-align:right;font-size:.76rem;color:#7a4020;background:#f0ddd2;border-radius:5px;padding:.2rem .45rem;margin-top:.2rem;line-height:1.6;"></div>'
+      + '</td>';
     html += '</tr>';
   }
   html += '</tbody></table>';
@@ -1608,6 +1622,16 @@ applyHv3AdminData();</script>
       <div class="cat-kicker">SPRACHBAUSTEINE — TEIL 1</div>
       <h1 class="cat-title" id="sb1-exam-title">Prüfung 01</h1>
       <p class="cat-lead" style="font-size:.85rem;">Lesen Sie den Text und wählen Sie für die Lücken (1–10) die richtige Antwort.</p>
+      <div style="margin-top:.6rem;position:relative;display:inline-block;">
+        <button id="sb1-islah-btn" onclick="sb1ToggleIslah()" style="display:inline-flex;align-items:center;gap:.38rem;background:transparent;color:var(--muted);border:1.5px solid var(--border);border-radius:8px;padding:.28rem .75rem;font-size:.72rem;font-weight:500;font-family:'DM Sans',sans-serif;cursor:pointer;transition:color .15s,border-color .15s,background .15s;letter-spacing:.01em;" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)';this.style.background='var(--accent-light)'" onmouseout="if(!window._sb1IslahOpen){this.style.borderColor='var(--border)';this.style.color='var(--muted)';this.style.background='transparent'}">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          الإصلاح
+        </button>
+        <div id="sb1-islah-panel" style="display:none;position:fixed;z-index:99999;background:#fff;border:2px solid var(--accent);border-radius:14px;box-shadow:0 8px 28px rgba(0,0,0,.18);padding:.55rem .55rem .45rem;min-width:190px;max-width:240px;max-height:60vh;overflow-y:auto;animation:sbPopIn .18s cubic-bezier(.2,.8,.4,1.1);">
+          <div style="font-size:.72rem;font-weight:700;color:var(--accent);text-align:center;padding-bottom:.35rem;border-bottom:1px solid #e2dbd0;letter-spacing:.04em;margin-bottom:.35rem;">✅ الإجابات الصحيحة</div>
+          <div id="sb1-islah-content" style="display:flex;flex-direction:column;gap:.22rem;"></div>
+        </div>
+      </div>
     </div>
   </div>
   <div class="content-area">
@@ -1635,6 +1659,16 @@ applyHv3AdminData();</script>
       <div class="cat-kicker">SPRACHBAUSTEINE — TEIL 2</div>
       <h1 class="cat-title" id="sb2-exam-title">Prüfung 01</h1>
       <p class="cat-lead" style="font-size:.85rem;">Lesen Sie den Text und wählen Sie für die Lücken (1–10) die richtige Antwort.</p>
+      <div style="margin-top:.6rem;position:relative;display:inline-block;">
+        <button id="sb2-islah-btn" onclick="sb2ToggleIslah()" style="display:inline-flex;align-items:center;gap:.38rem;background:transparent;color:var(--muted);border:1.5px solid var(--border);border-radius:8px;padding:.28rem .75rem;font-size:.72rem;font-weight:500;font-family:'DM Sans',sans-serif;cursor:pointer;transition:color .15s,border-color .15s,background .15s;letter-spacing:.01em;" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)';this.style.background='var(--accent-light)'" onmouseout="if(!window._sb2IslahOpen){this.style.borderColor='var(--border)';this.style.color='var(--muted)';this.style.background='transparent'}">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          الإصلاح
+        </button>
+        <div id="sb2-islah-panel" style="display:none;position:fixed;z-index:99999;background:#fff;border:2px solid var(--accent);border-radius:14px;box-shadow:0 8px 28px rgba(0,0,0,.18);padding:.55rem .55rem .45rem;min-width:190px;max-width:240px;max-height:60vh;overflow-y:auto;animation:sbPopIn .18s cubic-bezier(.2,.8,.4,1.1);">
+          <div style="font-size:.72rem;font-weight:700;color:var(--accent);text-align:center;padding-bottom:.35rem;border-bottom:1px solid #e2dbd0;letter-spacing:.04em;margin-bottom:.35rem;">✅ الإجابات الصحيحة</div>
+          <div id="sb2-islah-content" style="display:flex;flex-direction:column;gap:.22rem;"></div>
+        </div>
+      </div>
     </div>
   </div>
   <div class="content-area">
@@ -1712,12 +1746,6 @@ applyHv3AdminData();</script>
               style="width:52px;border:none;background:transparent;font-size:.9rem;font-weight:700;color:var(--accent);text-align:center;outline:none;">
             <span style="font-size:.8rem;color:var(--muted);">يوم</span>
           </div>
-          <div style="display:flex;align-items:center;gap:.4rem;background:var(--cream);border:1px solid var(--border);border-radius:4px;padding:.4rem .75rem;white-space:nowrap;">
-            <span style="font-size:.9rem;">🎙️</span>
-            <label for="ai-sessions-input" style="font-size:.8rem;font-weight:600;color:var(--ink);">جلسات AI:</label>
-            <input type="number" id="ai-sessions-input" min="3" max="999" value="3"
-              style="width:46px;border:none;background:transparent;font-size:.9rem;font-weight:700;color:var(--accent);text-align:center;outline:none;">
-          </div>
           <button class="btn-primary" onclick="addCode()" style="white-space:nowrap;">✚ إنشاء</button>
         </div>
         <div style="display:flex;gap:.5rem;margin-top:.65rem;flex-wrap:wrap;">
@@ -1731,7 +1759,7 @@ applyHv3AdminData();</script>
           </button>
         </div>
         <p class="admin-note" id="code-validity-note">الكود سيكون صالحاً لمدة <strong>يوم واحد</strong> من تاريخ الإنشاء — <span id="code-type-note" style="color:var(--accent);font-weight:600;">📱 هاتف واحد فقط</span>.</p>
-        <p class="admin-note" id="ai-sessions-note" style="color:var(--muted);">🎙️ عدد جلسات الممتحنة AI: <strong>0 = الميزة غير مفعّلة</strong> لهذا الكود. العدد مشترك بين كل من يستعمل هذا الكود.</p>
+        <p class="admin-note" style="color:var(--muted);">🎙️ ميزة الممتحنة AI متاحة بلا حدود لكل الأكواد — لا يوجد أي حد لعدد الجلسات.</p>
       </div>
 
 
@@ -3597,8 +3625,7 @@ async function _syncCodesIndex() {
           weeks: c.weeks || 1,
           active: c.active,
           type: c.type || 'single',
-          created_at: c.created_at,
-          ai_sessions: c.ai_sessions || 0
+          created_at: c.created_at
         })
       }).catch(function(e) {
         console.warn('codes_index sync failed for code:', c.code, e);
@@ -4059,8 +4086,6 @@ async function checkGate() {
     window.__sessionExpiry = expires; // حفظ تاريخ الانتهاء في الذاكرة فقط
     _sessionToken = verifyData.token; // حفظ الـ token في الذاكرة فقط (لا localStorage)
     // ✅ حصة جلسات الممتحنة AI (مشتركة لكل من يستعمل هذا الكود) — يرجعها /api/verify-code
-    window._aiSessionsTotal = verifyData.ai_sessions_total || 0;
-    window._aiSessionsUsed = verifyData.ai_sessions_used || 0;
     if (typeof window.aiUpdateQuotaDisplay === 'function') window.aiUpdateQuotaDisplay();
     _ENC.setUserCode(val).catch(function(e){ console.warn('ENC key setup failed:', e); });
     // حفظ نوع الكود في الذاكرة فقط
@@ -5140,21 +5165,18 @@ function setCodeType(t) {
 function addCode() {
   const input = document.getElementById('new-code-input');
   const weeksInput = document.getElementById('days-input');
-  const aiInput = document.getElementById('ai-sessions-input');
   const weeks = Math.max(2, Math.min(365, parseInt(weeksInput.value) || 2));
-  const aiSessions = Math.max(3, Math.min(999, parseInt(aiInput.value) || 3));
   const val = (input.value.trim() || generateCode()).toUpperCase();
   if (codes.find(c => c.code === val)) { showToast('⚠ Code existiert bereits'); return; }
-  codes.unshift({ id: Date.now().toString(), code: val, active: true, use_count: 0, created_at: new Date().toISOString(), weeks, type: _newCodeType, ai_sessions: aiSessions });
+  // ✅ ميزة الممتحنة AI متاحة بلا حدود لكل الأكواد تلقائياً — لا يوجد أي عدّ للجلسات
+  codes.unshift({ id: Date.now().toString(), code: val, active: true, use_count: 0, created_at: new Date().toISOString(), weeks, type: _newCodeType });
   saveCodes();
   input.value = '';
   weeksInput.value = 2;
-  aiInput.value = 0;
   updateValidityNote();
   const weeksLabel = weeks === 1 ? 'يوم واحد' : weeks + ' أيام';
   const typeLabel = _newCodeType === 'single' ? '📱 هاتف واحد' : '👥 متعدد الأجهزة';
-  const aiLabel = aiSessions > 0 ? (' — 🎙️ ' + aiSessions + ' جلسة AI') : '';
-  showToast('✓ Code ' + val + ' erstellt — ' + weeksLabel + ' — ' + typeLabel + aiLabel);
+  showToast('✓ Code ' + val + ' erstellt — ' + weeksLabel + ' — ' + typeLabel);
 }
 function updateValidityNote() {
   const weeksInput = document.getElementById('days-input');
@@ -5320,6 +5342,10 @@ function renderAiUsageReport(res) {
   if (failRateChat >= 15) {
     warnings.push('⚠️ نسبة فشل محادثة AI (Anthropic) عالية: <strong>' + failRateChat + '%</strong> (' + t.chatFail + ' من ' + t.chatCalls + ') — تحقق من رصيد حساب Anthropic.');
   }
+  var totalBlocked = (t.ttsBlocked || 0) + (t.chatBlocked || 0) + (t.whisperBlocked || 0);
+  if (totalBlocked > 0) {
+    warnings.push('🛑 <strong>' + totalBlocked + '</strong> محاولة استدعاء مباشر لـ AI تم رفضها (بدون جلسة نشطة شرعية) — هذا مؤشر على استعمال غير طبيعي (سكريبت/توكن معاد استعماله) وليس طلبة حقيقيين. راجع الأكواد أدناه بعمود "محاولات مرفوضة".');
+  }
   if (warnings.length) {
     html += '<div style="background:#fff8e1;border:1.5px solid #f9d71c;border-radius:10px;padding:1rem 1.25rem;margin-bottom:1.5rem;font-size:.82rem;line-height:1.9;">' + warnings.join('<br>') + '</div>';
   }
@@ -5329,9 +5355,10 @@ function renderAiUsageReport(res) {
   if (!res.codesRanked || !res.codesRanked.length) {
     html += '<p style="font-size:.8rem;color:var(--muted);margin-bottom:1.5rem;">لا توجد بيانات في هذه الفترة.</p>';
   } else {
-    html += '<div style="overflow-x:auto;margin-bottom:1.5rem;"><table style="min-width:640px;">';
-    html += '<tr><th>الكود</th><th>TTS حرف</th><th>~credit</th><th>محادثات</th><th>قُطع (max_tokens)</th><th>Whisper</th><th>فشل TTS</th></tr>';
+    html += '<div style="overflow-x:auto;margin-bottom:1.5rem;"><table style="min-width:720px;">';
+    html += '<tr><th>الكود</th><th>TTS حرف</th><th>~credit</th><th>محادثات</th><th>قُطع (max_tokens)</th><th>Whisper</th><th>فشل TTS</th><th>🛑 محاولات مرفوضة</th></tr>';
     res.codesRanked.forEach(function(c) {
+      var blocked = (c.ttsBlocked || 0) + (c.chatBlocked || 0) + (c.whisperBlocked || 0);
       html += '<tr>' +
         '<td style="font-weight:700;">' + escUsageHtml(c.code) + '</td>' +
         '<td>' + c.ttsChars.toLocaleString() + '</td>' +
@@ -5340,6 +5367,7 @@ function renderAiUsageReport(res) {
         '<td>' + (c.hitMaxTokens > 0 ? '<span class="badge badge-red">' + c.hitMaxTokens + '</span>' : '0') + '</td>' +
         '<td>' + c.whisperCalls + '</td>' +
         '<td>' + (c.ttsFail > 0 ? '<span class="badge badge-red">' + c.ttsFail + '</span>' : '0') + '</td>' +
+        '<td>' + (blocked > 0 ? '<span class="badge badge-red">' + blocked + '</span>' : '0') + '</td>' +
       '</tr>';
     });
     html += '</table></div>';
@@ -12003,11 +12031,12 @@ async function afkarMoveGroup(id, direction) {
 
   // ── Begin session (triggered by start button) ──────────────────
   window.aiBeginSession = function() {
-    // ✅ تحقّق من حصة جلسات AI واستهلك جلسة واحدة عبر الـ Worker قبل البدء الفعلي
+    // ✅ لا يوجد أي حد لعدد الجلسات — كل الأكواد حرة في فتح جلسات مع الممتحنة AI
+    // ما زلنا نمرّ عبر الـ Worker لفتح "الجلسة النشطة" (حاجز أمان ضد الاستدعاء المباشر لـ endpoints)
     var startBtn = document.getElementById('ai-start-btn');
     var quotaNote = document.getElementById('ai-quota-note');
     if (startBtn) startBtn.disabled = true;
-    if (quotaNote) { quotaNote.textContent = 'جارٍ التحقق من الجلسات المتاحة...'; quotaNote.style.color = ''; }
+    if (quotaNote) { quotaNote.textContent = 'جارٍ تجهيز الجلسة...'; quotaNote.style.color = ''; }
     var code = (window.__getActiveCode ? window.__getActiveCode() : null);
     var token = (window.__getToken ? window.__getToken() : null) || '';
     fetch(WORKER_URL + '/api/ai-session/consume', {
@@ -12023,14 +12052,17 @@ async function afkarMoveGroup(id, direction) {
     .then(function(res) {
       if (startBtn) startBtn.disabled = false;
       if (res.body && res.body.ok) {
-        if (typeof res.body.total === 'number') window._aiSessionsTotal = res.body.total;
-        if (typeof res.body.remaining === 'number') window._aiSessionsUsed = (window._aiSessionsTotal || 0) - res.body.remaining;
+        if (typeof res.body.remainingToday === 'number') window._aiRemainingToday = res.body.remainingToday;
         _aiActuallyBeginSession();
       } else {
         var errType = res.body && res.body.error;
-        var msg = (errType === 'quota_exceeded')
-          ? '🔒 لقد استهلكت جميع جلسات الممتحنة AI المتاحة لكودك. تواصل مع الإدارة لتفعيل جلسات إضافية.'
-          : '⚠ تعذّر بدء الجلسة، تحقق من اتصالك وحاول مرة أخرى.';
+        var msg;
+        if (errType === 'daily_limit_reached') {
+          var lim = (res.body && res.body.limit) || '';
+          msg = '🔒 لقد وصلت للحد الأقصى لعدد جلسات اليوم (' + lim + ' جلسات). حاول مرة أخرى غدًا.';
+        } else {
+          msg = '⚠ تعذّر بدء الجلسة، تحقق من اتصالك وحاول مرة أخرى.';
+        }
         if (quotaNote) { quotaNote.textContent = msg; quotaNote.style.color = '#c0392b'; }
         if (typeof showToast === 'function') showToast(msg);
       }
@@ -12190,30 +12222,20 @@ async function afkarMoveGroup(id, direction) {
     if (startScreen) startScreen.style.display = 'flex';
   };
 
-  // ── عرض عدد جلسات AI المتبقية على شاشة البداية ──────────────────
+  // ── عرض حالة الجلسة على شاشة البداية (بلا حد كلي، فقط حد يومي بسيط) ──
   function aiUpdateQuotaDisplay() {
     var note = document.getElementById('ai-quota-note');
     var startBtn = document.getElementById('ai-start-btn');
     var mini = document.getElementById('ai-quota-mini');
-    var total = window._aiSessionsTotal || 0;
-    var used = window._aiSessionsUsed || 0;
-    var remaining = Math.max(0, total - used);
     if (note) {
-      if (total <= 0) {
-        note.textContent = '🔒 ميزة الممتحنة AI غير مفعّلة لكودك. تواصل مع الإدارة لتفعيلها.';
-        note.style.color = '#c0392b';
-        if (startBtn) startBtn.disabled = true;
-      } else if (remaining <= 0) {
-        note.textContent = '🔒 لقد استهلكت كل جلساتك (' + used + '/' + total + '). تواصل مع الإدارة لتفعيل جلسات إضافية.';
-        note.style.color = '#c0392b';
-        if (startBtn) startBtn.disabled = true;
+      if (typeof window._aiRemainingToday === 'number') {
+        note.textContent = '🎙️ ' + window._aiRemainingToday + ' جلسة متبقية اليوم مع الممتحنة AI';
       } else {
-        note.textContent = '🎙️ لديك ' + remaining + ' من ' + total + ' جلسة متبقية مع الممتحنة AI';
-        note.style.color = '';
-        if (startBtn) startBtn.disabled = false;
+        note.textContent = '🎙️ ابدأ جلستك مع الممتحنة AI';
       }
+      note.style.color = '';
     }
-    // ✅ بادج صغير في صفحة Mündlich نفسها — يظهر قبل دخول الطالب لصفحة AI
+    if (startBtn) startBtn.disabled = false;
     if (mini) {
       mini.innerHTML = '';
     }
@@ -13161,6 +13183,8 @@ function ygSearch() {
 <script>
 window._lv1IslahOpen = false;
 window._lv3IslahOpen = false;
+window._sb1IslahOpen = false;
+window._sb2IslahOpen = false;
 
 function _islahPosition(btn, panel) {
   var r  = btn.getBoundingClientRect();
@@ -13300,6 +13324,92 @@ function lv3ToggleIslah() {
     function _close(e) {
       if (!panel.contains(e.target) && e.target !== btn) {
         panel.style.display = 'none'; window._lv3IslahOpen = false;
+        btn.style.borderColor = 'var(--border)'; btn.style.color = 'var(--muted)'; btn.style.background = 'transparent';
+        document.removeEventListener('click', _close);
+        document.removeEventListener('touchstart', _close);
+      }
+    }
+    document.addEventListener('click', _close);
+    document.addEventListener('touchstart', _close);
+  }, 10);
+}
+
+function sb1ToggleIslah() {
+  var panel = document.getElementById('sb1-islah-panel');
+  var btn   = document.getElementById('sb1-islah-btn');
+  if (!panel || !btn) return;
+  if (window._sb1IslahOpen) {
+    panel.style.display = 'none';
+    window._sb1IslahOpen = false;
+    btn.style.borderColor = 'var(--border)'; btn.style.color = 'var(--muted)'; btn.style.background = 'transparent';
+    return;
+  }
+  var content = document.getElementById('sb1-islah-content');
+  if (content) {
+    if (!currentSbExam || !currentSbExam.gaps) {
+      content.innerHTML = '<div style="font-size:.8rem;color:var(--muted);text-align:center;padding:.4rem 0;">لا يوجد اختبار محمّل</div>';
+    } else {
+      content.innerHTML = currentSbExam.gaps.map(function(g) {
+        var label = 'فراغ ' + g.num;
+        var ans   = (g.correct || '?');
+        return '<div style="display:flex;align-items:center;justify-content:space-between;gap:.75rem;padding:.3rem .5rem;border-radius:7px;background:#faf7f2;border:1px solid #ede8dc;">' +
+          '<span style="font-size:.8rem;font-weight:600;color:var(--ink);">' + label + '</span>' +
+          '<span style="display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:24px;background:#43a047;color:white;font-family:\'DM Sans\',sans-serif;font-size:.76rem;font-weight:700;border-radius:6px;padding:0 .5rem;white-space:nowrap;max-width:130px;overflow:hidden;text-overflow:ellipsis;">' + escHtml(ans) + '</span>' +
+        '</div>';
+      }).join('');
+    }
+  }
+  panel.style.display = 'block';
+  _islahPosition(btn, panel);
+  window._sb1IslahOpen = true;
+  btn.style.borderColor = 'var(--accent)'; btn.style.color = 'var(--accent)'; btn.style.background = 'var(--accent-light)';
+  setTimeout(function() {
+    function _close(e) {
+      if (!panel.contains(e.target) && e.target !== btn) {
+        panel.style.display = 'none'; window._sb1IslahOpen = false;
+        btn.style.borderColor = 'var(--border)'; btn.style.color = 'var(--muted)'; btn.style.background = 'transparent';
+        document.removeEventListener('click', _close);
+        document.removeEventListener('touchstart', _close);
+      }
+    }
+    document.addEventListener('click', _close);
+    document.addEventListener('touchstart', _close);
+  }, 10);
+}
+
+function sb2ToggleIslah() {
+  var panel = document.getElementById('sb2-islah-panel');
+  var btn   = document.getElementById('sb2-islah-btn');
+  if (!panel || !btn) return;
+  if (window._sb2IslahOpen) {
+    panel.style.display = 'none';
+    window._sb2IslahOpen = false;
+    btn.style.borderColor = 'var(--border)'; btn.style.color = 'var(--muted)'; btn.style.background = 'transparent';
+    return;
+  }
+  var content = document.getElementById('sb2-islah-content');
+  if (content) {
+    if (!currentSbExam || !currentSbExam.gaps) {
+      content.innerHTML = '<div style="font-size:.8rem;color:var(--muted);text-align:center;padding:.4rem 0;">لا يوجد اختبار محمّل</div>';
+    } else {
+      content.innerHTML = currentSbExam.gaps.map(function(g) {
+        var label = 'فراغ ' + g.num;
+        var ans   = (g.correct || '?');
+        return '<div style="display:flex;align-items:center;justify-content:space-between;gap:.75rem;padding:.3rem .5rem;border-radius:7px;background:#faf7f2;border:1px solid #ede8dc;">' +
+          '<span style="font-size:.8rem;font-weight:600;color:var(--ink);">' + label + '</span>' +
+          '<span style="display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:24px;background:#43a047;color:white;font-family:\'DM Sans\',sans-serif;font-size:.76rem;font-weight:700;border-radius:6px;padding:0 .5rem;white-space:nowrap;max-width:130px;overflow:hidden;text-overflow:ellipsis;">' + escHtml(ans) + '</span>' +
+        '</div>';
+      }).join('');
+    }
+  }
+  panel.style.display = 'block';
+  _islahPosition(btn, panel);
+  window._sb2IslahOpen = true;
+  btn.style.borderColor = 'var(--accent)'; btn.style.color = 'var(--accent)'; btn.style.background = 'var(--accent-light)';
+  setTimeout(function() {
+    function _close(e) {
+      if (!panel.contains(e.target) && e.target !== btn) {
+        panel.style.display = 'none'; window._sb2IslahOpen = false;
         btn.style.borderColor = 'var(--border)'; btn.style.color = 'var(--muted)'; btn.style.background = 'transparent';
         document.removeEventListener('click', _close);
         document.removeEventListener('touchstart', _close);
